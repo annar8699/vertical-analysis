@@ -3,8 +3,8 @@
 @tailwind utilities;
 
 :root {
-  --maira-green: #0d2b1e;
+  --maira-green: #0A2B1D;
   --maira-green-light: #163d2b;
-  --maira-orange: #e8502a;
-  --maira-orange-hover: #d44420;
+  --maira-orange: #FF4D30;
+  --maira-orange-hover: #e03e20;
 }

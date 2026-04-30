@@ -40,20 +40,20 @@ export function TotalTrendChart({ data }: { data: KeywordResult[] }) {
       <AreaChart data={chartData} margin={{ top: 5, right: 20, left: 0, bottom: 5 }}>
         <defs>
           <linearGradient id="totalGradient" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="5%" stopColor="#e8502a" stopOpacity={0.15} />
-            <stop offset="95%" stopColor="#e8502a" stopOpacity={0} />
+            <stop offset="5%" stopColor="#FF4D30" stopOpacity={0.15} />
+            <stop offset="95%" stopColor="#FF4D30" stopOpacity={0} />
           </linearGradient>
         </defs>
         <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
         <XAxis
           dataKey="label"
-          tick={{ fontSize: 10, fill: '#6b7280', fontFamily: 'var(--font-montserrat)' }}
+          tick={{ fontSize: 10, fill: '#6b7280', fontFamily: 'var(--font-inter), sans-serif' }}
           tickLine={false}
           axisLine={false}
           interval="preserveStartEnd"
         />
         <YAxis
-          tick={{ fontSize: 11, fill: '#6b7280', fontFamily: 'var(--font-montserrat)' }}
+          tick={{ fontSize: 11, fill: '#6b7280', fontFamily: 'var(--font-inter), sans-serif' }}
           tickLine={false}
           axisLine={false}
           tickFormatter={(v: number) =>
@@ -70,18 +70,18 @@ export function TotalTrendChart({ data }: { data: KeywordResult[] }) {
             borderRadius: '8px',
             border: '1px solid #e5e7eb',
             fontSize: '12px',
-            fontFamily: 'var(--font-montserrat)',
+            fontFamily: 'var(--font-inter), sans-serif',
           }}
           formatter={(value: number) => [value.toLocaleString('en'), 'Total searches']}
         />
         <Area
           type="monotone"
           dataKey="total"
-          stroke="#e8502a"
+          stroke="#FF4D30"
           strokeWidth={2.5}
           fill="url(#totalGradient)"
           dot={false}
-          activeDot={{ r: 4, fill: '#e8502a' }}
+          activeDot={{ r: 4, fill: '#FF4D30' }}
         />
       </AreaChart>
     </ResponsiveContainer>

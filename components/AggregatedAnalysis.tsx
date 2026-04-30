@@ -14,7 +14,7 @@ import {
 import type { KeywordResult } from '@/lib/trendAnalysis'
 
 const MONTH_NAMES = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
-const YEAR_COLORS = ['#e8502a', '#2563eb', '#16a34a', '#9333ea', '#0891b2', '#f59e0b']
+const YEAR_COLORS = ['#FF4D30', '#2563eb', '#16a34a', '#9333ea', '#0891b2', '#f59e0b']
 
 function fmt(n: number) {
   return n.toLocaleString('en')
@@ -258,12 +258,12 @@ export function AggregatedAnalysis({ data }: { data: KeywordResult[] }) {
             <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
             <XAxis
               dataKey="month"
-              tick={{ fontSize: 11, fill: '#6b7280', fontFamily: 'var(--font-montserrat)' }}
+              tick={{ fontSize: 11, fill: '#6b7280', fontFamily: 'var(--font-inter), sans-serif' }}
               tickLine={false}
               axisLine={false}
             />
             <YAxis
-              tick={{ fontSize: 11, fill: '#6b7280', fontFamily: 'var(--font-montserrat)' }}
+              tick={{ fontSize: 11, fill: '#6b7280', fontFamily: 'var(--font-inter), sans-serif' }}
               tickLine={false}
               axisLine={false}
               tickFormatter={(v: number) =>
@@ -280,7 +280,7 @@ export function AggregatedAnalysis({ data }: { data: KeywordResult[] }) {
                 borderRadius: '8px',
                 border: '1px solid #e5e7eb',
                 fontSize: '12px',
-                fontFamily: 'var(--font-montserrat)',
+                fontFamily: 'var(--font-inter), sans-serif',
               }}
               formatter={(value: number, name: string) => [fmt(value), name]}
             />
@@ -288,7 +288,7 @@ export function AggregatedAnalysis({ data }: { data: KeywordResult[] }) {
               wrapperStyle={{
                 fontSize: '12px',
                 paddingTop: '16px',
-                fontFamily: 'var(--font-montserrat)',
+                fontFamily: 'var(--font-inter), sans-serif',
               }}
             />
             {years.map((year, i) => (
