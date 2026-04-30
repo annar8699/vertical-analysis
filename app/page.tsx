@@ -72,6 +72,7 @@ export default function Home() {
   const [results, setResults] = useState<KeywordResult[] | null>(null)
   const [sortKey, setSortKey] = useState<'keyword' | 'avg' | 'min' | 'max' | 'trend' | null>(null)
   const [sortDir, setSortDir] = useState<'desc' | 'asc'>('desc')
+  const [openGroups, setOpenGroups] = useState<Set<string>>(new Set(['growing', 'stable', 'declining']))
   const [isMock, setIsMock] = useState(false)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -348,63 +349,95 @@ export default function Home() {
             {/* Aggregated analysis: volume matrix + YoY + annual chart */}
             <AggregatedAnalysis data={results} />
 
-            {/* Summary cards */}
-            <div className="bg-white rounded-2xl p-6 shadow-sm">
-              <div className="flex items-center justify-between mb-4">
-                <div>
-                  <h2
-                    className="text-xs font-bold uppercase tracking-widest"
-                    style={{ color: 'var(--maira-green)', letterSpacing: '0.15em' }}
-                  >
-                    Keyword Breakdown
-                  </h2>
-                  <p className="text-xs mt-0.5" style={{ color: '#9ca3af' }}>
-                    Average monthly volume &amp; trend per keyword
-                  </p>
-                </div>
-                <button
-                  onClick={() => downloadCSV(results)}
-                  className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium border rounded-lg transition-colors"
-                  style={{ borderColor: '#e5e7eb', color: '#6b7280' }}
-                  onMouseEnter={(e) => {
-                    ;(e.currentTarget as HTMLButtonElement).style.borderColor = 'var(--maira-orange)'
-                    ;(e.currentTarget as HTMLButtonElement).style.color = 'var(--maira-orange)'
-                  }}
-                  onMouseLeave={(e) => {
-                    ;(e.currentTarget as HTMLButtonElement).style.borderColor = '#e5e7eb'
-                    ;(e.currentTarget as HTMLButtonElement).style.color = '#6b7280'
-                  }}
+            {/* Keyword Breakdown — grouped accordion */}
+            <div className="bg-white rounded-2xl shadow-sm overflow-hidden">
+              <div className="px-6 py-4" style={{ borderBottom: '1px solid #f3f4f6' }}>
+                <h2
+                  className="text-xs font-bold uppercase tracking-widest"
+                  style={{ color: 'var(--maira-green)', letterSpacing: '0.15em' }}
                 >
-                  <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-                    />
-                  </svg>
-                  Export CSV
-                </button>
+                  Keyword Breakdown
+                </h2>
+                <p className="text-xs mt-0.5" style={{ color: '#9ca3af' }}>
+                  Average monthly volume per keyword, grouped by trend
+                </p>
               </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-                {results.map((r) => (
-                  <div
-                    key={r.keyword}
-                    className="flex items-center justify-between p-3 rounded-xl"
-                    style={{ backgroundColor: '#f9fafb' }}
-                  >
-                    <div>
-                      <p className="text-sm font-semibold" style={{ color: '#111827' }}>
-                        {r.keyword}
+
+              {(
+                [
+                  { trend: 'growing',  label: 'Growing',  dot: '#16a34a', bg: '#f0fdf4', border: '#bbf7d0' },
+                  { trend: 'stable',   label: 'Stable',   dot: '#ea580c', bg: '#fff7ed', border: '#fed7aa' },
+                  { trend: 'declining',label: 'Declining', dot: '#dc2626', bg: '#fef2f2', border: '#fecaca' },
+                ] as const
+              ).map(({ trend, label, dot, bg, border }) => {
+                const group = results.filter((r) => r.trend === trend)
+                const isOpen = openGroups.has(trend)
+                return (
+                  <div key={trend} style={{ borderBottom: '1px solid #f3f4f6' }}>
+                    <button
+                      onClick={() => {
+                        setOpenGroups((prev) => {
+                          const next = new Set(prev)
+                          next.has(trend) ? next.delete(trend) : next.add(trend)
+                          return next
+                        })
+                      }}
+                      className="w-full flex items-center justify-between px-6 py-3 text-left"
+                      style={{ backgroundColor: isOpen ? bg : '#fff' }}
+                    >
+                      <div className="flex items-center gap-3">
+                        <span className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ backgroundColor: dot }} />
+                        <span className="text-sm font-semibold" style={{ color: '#111827' }}>
+                          {label}
+                        </span>
+                        <span
+                          className="text-xs font-bold px-2 py-0.5 rounded-full"
+                          style={{ backgroundColor: border, color: dot }}
+                        >
+                          {group.length}
+                        </span>
+                      </div>
+                      <svg
+                        className="w-4 h-4 flex-shrink-0 transition-transform"
+                        style={{ color: '#9ca3af', transform: isOpen ? 'rotate(180deg)' : 'rotate(0deg)' }}
+                        fill="none" viewBox="0 0 24 24" stroke="currentColor"
+                      >
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                      </svg>
+                    </button>
+
+                    {isOpen && group.length > 0 && (
+                      <div className="px-6 pb-4 pt-2 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
+                        {group
+                          .slice()
+                          .sort((a, b) => b.avgVolume - a.avgVolume)
+                          .map((r) => (
+                            <div
+                              key={r.keyword}
+                              className="flex items-center justify-between p-3 rounded-xl"
+                              style={{ backgroundColor: '#f9fafb', border: `1px solid ${border}` }}
+                            >
+                              <div>
+                                <p className="text-sm font-semibold" style={{ color: '#111827' }}>
+                                  {r.keyword}
+                                </p>
+                                <p className="text-xs mt-0.5" style={{ color: '#9ca3af' }}>
+                                  {r.avgVolume.toLocaleString('en')} searches/mo.
+                                </p>
+                              </div>
+                            </div>
+                          ))}
+                      </div>
+                    )}
+
+                    {isOpen && group.length === 0 && (
+                      <p className="px-6 pb-4 pt-2 text-xs" style={{ color: '#d1d5db' }}>
+                        No keywords in this category.
                       </p>
-                      <p className="text-xs mt-0.5" style={{ color: '#9ca3af' }}>
-                        {r.avgVolume.toLocaleString('en')} searches/mo.
-                      </p>
-                    </div>
-                    <TrendBadge trend={r.trend} />
+                    )}
                   </div>
-                ))}
-              </div>
+                )
+              })}
             </div>
 
             {/* Total trend chart */}
