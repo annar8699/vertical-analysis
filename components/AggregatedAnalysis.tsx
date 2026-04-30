@@ -86,8 +86,8 @@ export function AggregatedAnalysis({ data }: { data: KeywordResult[] }) {
 
   if (years.length === 0) return null
 
-  const thStyle = 'text-right px-3 py-2.5 text-xs font-bold uppercase tracking-wider whitespace-nowrap'
-  const tdStyle = 'px-3 py-2.5 text-right tabular-nums'
+  const thStyle = 'text-right px-2 py-2 text-xs font-bold uppercase tracking-wider whitespace-nowrap'
+  const tdStyle = 'px-2 py-2 text-right tabular-nums text-xs'
 
   return (
     <div className="space-y-6">
@@ -109,7 +109,7 @@ export function AggregatedAnalysis({ data }: { data: KeywordResult[] }) {
             <thead style={{ backgroundColor: 'var(--maira-green)' }}>
               <tr>
                 <th
-                  className="text-left px-4 py-2.5 text-xs font-bold uppercase tracking-wider"
+                  className="text-left px-3 py-2 text-xs font-bold uppercase tracking-wider"
                   style={{ color: 'rgba(255,255,255,0.7)', letterSpacing: '0.12em' }}
                 >
                   Year
@@ -124,7 +124,7 @@ export function AggregatedAnalysis({ data }: { data: KeywordResult[] }) {
                   </th>
                 ))}
                 <th
-                  className={thStyle + ' px-4'}
+                  className={thStyle + ' px-3'}
                   style={{ color: 'rgba(255,255,255,0.7)', letterSpacing: '0.08em' }}
                 >
                   Total
@@ -136,7 +136,7 @@ export function AggregatedAnalysis({ data }: { data: KeywordResult[] }) {
                 const total = Object.values(matrix[year] ?? {}).reduce((a, b) => a + b, 0)
                 return (
                   <tr key={year} style={{ backgroundColor: idx % 2 === 0 ? '#fff' : '#f9fafb' }}>
-                    <td className="px-4 py-2.5 font-bold whitespace-nowrap" style={{ color: '#111827' }}>
+                    <td className="px-3 py-2 font-bold whitespace-nowrap text-sm" style={{ color: '#111827' }}>
                       {year}
                       {partialYears.has(year) && (
                         <span className="ml-1.5 text-xs font-normal" style={{ color: '#9ca3af' }}>
@@ -157,7 +157,7 @@ export function AggregatedAnalysis({ data }: { data: KeywordResult[] }) {
                       )
                     })}
                     <td
-                      className={tdStyle + ' px-4 font-semibold'}
+                      className={tdStyle + ' px-3 font-semibold'}
                       style={{ color: '#111827' }}
                     >
                       {fmt(total)}
@@ -203,7 +203,7 @@ export function AggregatedAnalysis({ data }: { data: KeywordResult[] }) {
                   </th>
                 ))}
                 <th
-                  className={thStyle + ' px-4'}
+                  className={thStyle + ' px-3'}
                   style={{ color: 'rgba(255,255,255,0.7)', letterSpacing: '0.08em' }}
                 >
                   Total
@@ -213,7 +213,7 @@ export function AggregatedAnalysis({ data }: { data: KeywordResult[] }) {
             <tbody>
               {yoyRows.map((row, idx) => (
                 <tr key={row.label} style={{ backgroundColor: idx % 2 === 0 ? '#fff' : '#f9fafb' }}>
-                  <td className="px-4 py-2.5 font-bold whitespace-nowrap" style={{ color: '#111827' }}>
+                  <td className="px-3 py-2 font-bold whitespace-nowrap text-sm" style={{ color: '#111827' }}>
                     {row.label}
                     {(partialYears.has(years[idx]) || partialYears.has(years[idx + 1])) && (
                       <span className="ml-1.5 text-xs font-normal" style={{ color: '#9ca3af' }}>
@@ -226,7 +226,7 @@ export function AggregatedAnalysis({ data }: { data: KeywordResult[] }) {
                       {pct(v)}
                     </td>
                   ))}
-                  <td className={`${tdStyle} px-4 font-bold ${pctClass(row.total)}`}>
+                  <td className={`${tdStyle} px-3 font-bold ${pctClass(row.total)}`}>
                     {pct(row.total)}
                   </td>
                 </tr>

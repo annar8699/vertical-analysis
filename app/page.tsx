@@ -148,7 +148,7 @@ export default function Home() {
     <div className="min-h-screen flex flex-col" style={{ backgroundColor: '#f5f5f0' }}>
       {/* Header */}
       <header style={{ backgroundColor: 'var(--maira-green)' }}>
-        <div className="max-w-5xl mx-auto px-6 py-5 flex items-center justify-between">
+        <div className="max-w-7xl mx-auto px-6 py-5 flex items-center justify-between">
           <div>
             <h1
               className="text-white font-bold uppercase tracking-widest text-lg"
@@ -173,7 +173,7 @@ export default function Home() {
         </div>
       </header>
 
-      <main className="flex-1 max-w-5xl mx-auto w-full px-6 py-8 space-y-6">
+      <main className="flex-1 max-w-7xl mx-auto w-full px-6 py-8 space-y-6">
         {/* Keywords input */}
         <div className="bg-white rounded-2xl p-6 shadow-sm">
           <h2
@@ -464,7 +464,7 @@ export default function Home() {
       {/* Footer */}
       <footer style={{ backgroundColor: 'var(--maira-green)' }}>
         <div
-          className="max-w-5xl mx-auto px-6 py-4 text-center text-xs font-medium uppercase tracking-widest"
+          className="max-w-7xl mx-auto px-6 py-4 text-center text-xs font-medium uppercase tracking-widest"
           style={{ color: 'rgba(255,255,255,0.4)', letterSpacing: '0.12em' }}
         >
           © {new Date().getFullYear()} Maira Team | Performance Marketing
