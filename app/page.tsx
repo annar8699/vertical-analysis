@@ -423,6 +423,29 @@ export default function Home() {
 
             {/* Table */}
             <div className="bg-white rounded-2xl shadow-sm overflow-hidden">
+              <div className="flex items-center justify-between px-6 py-4" style={{ borderBottom: '1px solid #f3f4f6' }}>
+                <h2 className="text-xs font-bold uppercase tracking-widest" style={{ color: 'var(--maira-green)', letterSpacing: '0.15em' }}>
+                  Keyword Detail
+                </h2>
+                <button
+                  onClick={() => downloadCSV(results)}
+                  className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium border rounded-lg transition-colors"
+                  style={{ borderColor: '#e5e7eb', color: '#6b7280' }}
+                  onMouseEnter={(e) => {
+                    ;(e.currentTarget as HTMLButtonElement).style.borderColor = 'var(--maira-orange)'
+                    ;(e.currentTarget as HTMLButtonElement).style.color = 'var(--maira-orange)'
+                  }}
+                  onMouseLeave={(e) => {
+                    ;(e.currentTarget as HTMLButtonElement).style.borderColor = '#e5e7eb'
+                    ;(e.currentTarget as HTMLButtonElement).style.color = '#6b7280'
+                  }}
+                >
+                  <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                  </svg>
+                  Export CSV
+                </button>
+              </div>
               <table className="w-full text-sm">
                 <thead style={{ backgroundColor: 'var(--maira-green)' }}>
                   <tr>
