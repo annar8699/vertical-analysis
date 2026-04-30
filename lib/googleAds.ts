@@ -42,7 +42,7 @@ export async function fetchKeywordVolumes(
   const customerId = process.env.GOOGLE_ADS_CUSTOMER_ID!.replace(/-/g, '')
 
   const response = await fetch(
-    `https://googleads.googleapis.com/v18/customers/${customerId}:generateKeywordHistoricalMetrics`,
+    `https://googleads.googleapis.com/v17/customers/${customerId}/keywordPlanIdeas:generateKeywordHistoricalMetrics`,
     {
       method: 'POST',
       headers: {
