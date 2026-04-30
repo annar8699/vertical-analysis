@@ -14,7 +14,7 @@ export interface KeywordResult {
   trend: TrendDirection
 }
 
-const MONTH_LABELS = ['Led', 'Úno', 'Bře', 'Dub', 'Kvě', 'Čvn', 'Čvc', 'Srp', 'Zář', 'Říj', 'Lis', 'Pro']
+const MONTH_LABELS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
 
 export function formatMonthLabel(year: number, month: number): string {
   return `${MONTH_LABELS[month - 1]} ${String(year).slice(2)}`
