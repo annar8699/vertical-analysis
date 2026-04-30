@@ -84,7 +84,7 @@ export async function fetchKeywordVolumes(
     const monthlyData: MonthlyVolume[] = sorted.map((m) => ({
       year: m.year as number,
       month: m.month as number,
-      volume: (m.monthlySearches as number) ?? 0,
+      volume: parseInt(String(m.monthlySearches ?? m.monthlySearchVolume ?? 0), 10) || 0,
       label: formatMonthLabel(m.year as number, m.month as number),
     }))
 
