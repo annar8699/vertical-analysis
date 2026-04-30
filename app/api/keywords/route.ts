@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { generateMockResults } from '@/lib/mockData'
 
+export const maxDuration = 60
+
 const USE_MOCK = !process.env.GOOGLE_ADS_DEVELOPER_TOKEN
 
 export async function POST(req: NextRequest) {
@@ -14,8 +16,8 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'No keywords provided.' }, { status: 400 })
     }
 
-    if (keywords.length > 20) {
-      return NextResponse.json({ error: 'Maximum 20 keywords at a time.' }, { status: 400 })
+    if (keywords.length > 1000) {
+      return NextResponse.json({ error: 'Maximum 1,000 keywords at a time.' }, { status: 400 })
     }
 
     const results = USE_MOCK

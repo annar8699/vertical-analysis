@@ -116,8 +116,8 @@ export default function Home() {
       return
     }
 
-    if (keywords.length > 20) {
-      setError('Maximum 20 keywords at a time.')
+    if (keywords.length > 1000) {
+      setError('Maximum 1,000 keywords at a time.')
       return
     }
 
@@ -183,13 +183,13 @@ export default function Home() {
             Keywords
           </h2>
           <p className="text-xs mb-3" style={{ color: '#9ca3af' }}>
-            Up to 20 keywords, one per line
+            Up to 1,000 keywords, one per line
           </p>
           <textarea
             value={keywordsText}
             onChange={(e) => setKeywordsText(e.target.value)}
             placeholder={'furniture\nsofa\ncustom armchair'}
-            className="w-full h-36 px-3 py-2 text-sm border rounded-xl resize-none focus:outline-none font-mono"
+            className="w-full h-56 px-3 py-2 text-sm border rounded-xl resize-y focus:outline-none font-mono"
             style={{
               borderColor: '#e5e7eb',
               color: '#1f2937',
