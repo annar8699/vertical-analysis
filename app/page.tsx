@@ -117,29 +117,71 @@ export default function Home() {
   }
 
   return (
-    <main className="min-h-screen bg-slate-50">
-      <header className="bg-white border-b border-slate-200">
-        <div className="max-w-5xl mx-auto px-6 py-4">
-          <h1 className="text-xl font-semibold text-slate-900">Vertical Analysis</h1>
-          <p className="text-sm text-slate-500">Analýza vývoje hledanosti klíčových slov</p>
+    <div className="min-h-screen flex flex-col" style={{ backgroundColor: '#f5f5f0' }}>
+      {/* Header */}
+      <header style={{ backgroundColor: 'var(--maira-green)' }}>
+        <div className="max-w-5xl mx-auto px-6 py-5 flex items-center justify-between">
+          <div>
+            <h1
+              className="text-white font-bold uppercase tracking-widest text-lg"
+              style={{ letterSpacing: '0.15em' }}
+            >
+              Vertical Analysis
+            </h1>
+            <p className="text-sm mt-0.5" style={{ color: 'rgba(255,255,255,0.55)' }}>
+              Analýza vývoje hledanosti klíčových slov
+            </p>
+          </div>
+          <span
+            className="text-xs font-bold uppercase tracking-widest px-3 py-1 rounded-full"
+            style={{
+              backgroundColor: 'var(--maira-orange)',
+              color: '#fff',
+              letterSpacing: '0.12em',
+            }}
+          >
+            Maira
+          </span>
         </div>
       </header>
 
-      <div className="max-w-5xl mx-auto px-6 py-8 space-y-6">
+      <main className="flex-1 max-w-5xl mx-auto w-full px-6 py-8 space-y-6">
         {/* Keywords input */}
-        <div className="bg-white rounded-xl border border-slate-200 p-6">
-          <h2 className="text-sm font-medium text-slate-700 mb-3">
-            Klíčová slova{' '}
-            <span className="text-slate-400 font-normal">(max. 20, jedno na řádek)</span>
+        <div className="bg-white rounded-2xl p-6 shadow-sm">
+          <h2
+            className="text-xs font-bold uppercase tracking-widest mb-1"
+            style={{ color: 'var(--maira-green)', letterSpacing: '0.15em' }}
+          >
+            Klíčová slova
           </h2>
+          <p className="text-xs mb-3" style={{ color: '#9ca3af' }}>
+            Maximálně 20 klíčových slov, jedno na řádek
+          </p>
           <textarea
             value={keywordsText}
             onChange={(e) => setKeywordsText(e.target.value)}
             placeholder={'nábytek\npohovka\nkřeslo na míru'}
-            className="w-full h-36 px-3 py-2 text-sm border border-slate-200 rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent font-mono"
+            className="w-full h-36 px-3 py-2 text-sm border rounded-xl resize-none focus:outline-none font-mono"
+            style={{
+              borderColor: '#e5e7eb',
+              color: '#1f2937',
+            }}
+            onFocus={(e) => (e.target.style.borderColor = 'var(--maira-orange)')}
+            onBlur={(e) => (e.target.style.borderColor = '#e5e7eb')}
           />
           <div className="flex items-center gap-3 mt-3">
-            <label className="flex items-center gap-2 px-3 py-1.5 text-xs text-slate-600 border border-slate-200 rounded-lg cursor-pointer hover:bg-slate-50 transition-colors">
+            <label
+              className="flex items-center gap-2 px-3 py-1.5 text-xs font-medium border rounded-lg cursor-pointer transition-colors"
+              style={{ borderColor: '#e5e7eb', color: '#6b7280' }}
+              onMouseEnter={(e) => {
+                ;(e.currentTarget as HTMLLabelElement).style.borderColor = 'var(--maira-orange)'
+                ;(e.currentTarget as HTMLLabelElement).style.color = 'var(--maira-orange)'
+              }}
+              onMouseLeave={(e) => {
+                ;(e.currentTarget as HTMLLabelElement).style.borderColor = '#e5e7eb'
+                ;(e.currentTarget as HTMLLabelElement).style.color = '#6b7280'
+              }}
+            >
               <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path
                   strokeLinecap="round"
@@ -156,18 +198,26 @@ export default function Home() {
                 onChange={handleFileUpload}
               />
             </label>
-            <span className="text-xs text-slate-400">Sloupec A = seznam keywords</span>
+            <span className="text-xs" style={{ color: '#d1d5db' }}>
+              Sloupec A = seznam keywords
+            </span>
           </div>
         </div>
 
         {/* Settings */}
         <div className="flex flex-wrap gap-4">
           <div>
-            <label className="block text-xs font-medium text-slate-600 mb-1">Trh</label>
+            <label
+              className="block text-xs font-bold uppercase tracking-widest mb-1.5"
+              style={{ color: 'var(--maira-green)', letterSpacing: '0.12em' }}
+            >
+              Trh
+            </label>
             <select
               value={geo}
               onChange={(e) => setGeo(e.target.value)}
-              className="px-3 py-2 text-sm border border-slate-200 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="px-3 py-2 text-sm border rounded-xl bg-white focus:outline-none"
+              style={{ borderColor: '#e5e7eb', color: '#1f2937' }}
             >
               {GEOS.map((g) => (
                 <option key={g.value} value={g.value}>
@@ -177,11 +227,17 @@ export default function Home() {
             </select>
           </div>
           <div>
-            <label className="block text-xs font-medium text-slate-600 mb-1">Období</label>
+            <label
+              className="block text-xs font-bold uppercase tracking-widest mb-1.5"
+              style={{ color: 'var(--maira-green)', letterSpacing: '0.12em' }}
+            >
+              Období
+            </label>
             <select
               value={months}
               onChange={(e) => setMonths(Number(e.target.value))}
-              className="px-3 py-2 text-sm border border-slate-200 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="px-3 py-2 text-sm border rounded-xl bg-white focus:outline-none"
+              style={{ borderColor: '#e5e7eb', color: '#1f2937' }}
             >
               <option value={12}>Posledních 12 měsíců</option>
               <option value={24}>Posledních 24 měsíců</option>
@@ -191,7 +247,10 @@ export default function Home() {
         </div>
 
         {error && (
-          <div className="bg-red-50 border border-red-200 rounded-lg px-4 py-3 text-sm text-red-700">
+          <div
+            className="rounded-xl px-4 py-3 text-sm"
+            style={{ backgroundColor: '#fef2f2', border: '1px solid #fecaca', color: '#b91c1c' }}
+          >
             {error}
           </div>
         )}
@@ -199,27 +258,62 @@ export default function Home() {
         <button
           onClick={handleAnalyze}
           disabled={loading || !keywordsText.trim()}
-          className="w-full py-3 bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white text-sm font-medium rounded-xl transition-colors"
+          className="w-full py-3.5 text-white text-sm font-bold uppercase tracking-widest rounded-xl transition-colors disabled:opacity-40"
+          style={{
+            backgroundColor: loading || !keywordsText.trim() ? '#9ca3af' : 'var(--maira-orange)',
+            letterSpacing: '0.12em',
+          }}
+          onMouseEnter={(e) => {
+            if (!loading && keywordsText.trim())
+              (e.currentTarget as HTMLButtonElement).style.backgroundColor =
+                'var(--maira-orange-hover)'
+          }}
+          onMouseLeave={(e) => {
+            if (!loading && keywordsText.trim())
+              (e.currentTarget as HTMLButtonElement).style.backgroundColor = 'var(--maira-orange)'
+          }}
         >
-          {loading ? 'Načítám data...' : 'Analyzovat vertikálu'}
+          {loading ? 'Načítám data…' : 'Analyzovat vertikálu'}
         </button>
 
         {/* Results */}
         {results && (
           <div className="space-y-6">
             {isMock && (
-              <div className="bg-amber-50 border border-amber-200 rounded-lg px-4 py-3 text-sm text-amber-700">
-                Zobrazena jsou ukázková data. Pro reálná data nastav Google Ads API credentials v prostředí Vercelu.
+              <div
+                className="rounded-xl px-4 py-3 text-sm"
+                style={{
+                  backgroundColor: '#fffbeb',
+                  border: '1px solid #fde68a',
+                  color: '#92400e',
+                }}
+              >
+                Zobrazena jsou ukázková data. Pro reálná data nastav Google Ads API credentials v
+                prostředí Vercelu.
               </div>
             )}
 
             {/* Summary cards */}
-            <div className="bg-white rounded-xl border border-slate-200 p-6">
+            <div className="bg-white rounded-2xl p-6 shadow-sm">
               <div className="flex items-center justify-between mb-4">
-                <h2 className="text-sm font-medium text-slate-700">Přehled</h2>
+                <h2
+                  className="text-xs font-bold uppercase tracking-widest"
+                  style={{ color: 'var(--maira-green)', letterSpacing: '0.15em' }}
+                >
+                  Přehled
+                </h2>
                 <button
                   onClick={() => downloadCSV(results)}
-                  className="flex items-center gap-1.5 px-3 py-1.5 text-xs text-slate-600 border border-slate-200 rounded-lg hover:bg-slate-50 transition-colors"
+                  className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium border rounded-lg transition-colors"
+                  style={{ borderColor: '#e5e7eb', color: '#6b7280' }}
+                  onMouseEnter={(e) => {
+                    ;(e.currentTarget as HTMLButtonElement).style.borderColor = 'var(--maira-orange)'
+                    ;(e.currentTarget as HTMLButtonElement).style.color = 'var(--maira-orange)'
+                  }}
+                  onMouseLeave={(e) => {
+                    ;(e.currentTarget as HTMLButtonElement).style.borderColor = '#e5e7eb'
+                    ;(e.currentTarget as HTMLButtonElement).style.color = '#6b7280'
+                  }}
                 >
                   <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path
@@ -236,11 +330,14 @@ export default function Home() {
                 {results.map((r) => (
                   <div
                     key={r.keyword}
-                    className="flex items-center justify-between p-3 bg-slate-50 rounded-lg"
+                    className="flex items-center justify-between p-3 rounded-xl"
+                    style={{ backgroundColor: '#f9fafb' }}
                   >
                     <div>
-                      <p className="text-sm font-medium text-slate-900">{r.keyword}</p>
-                      <p className="text-xs text-slate-500">
+                      <p className="text-sm font-semibold" style={{ color: '#111827' }}>
+                        {r.keyword}
+                      </p>
+                      <p className="text-xs mt-0.5" style={{ color: '#9ca3af' }}>
                         {r.avgVolume.toLocaleString('cs')} hledání/měs.
                       </p>
                     </div>
@@ -251,44 +348,69 @@ export default function Home() {
             </div>
 
             {/* Chart */}
-            <div className="bg-white rounded-xl border border-slate-200 p-6">
-              <h2 className="text-sm font-medium text-slate-700 mb-4">Vývoj hledanosti</h2>
+            <div className="bg-white rounded-2xl p-6 shadow-sm">
+              <h2
+                className="text-xs font-bold uppercase tracking-widest mb-4"
+                style={{ color: 'var(--maira-green)', letterSpacing: '0.15em' }}
+              >
+                Vývoj hledanosti
+              </h2>
               <VerticalChart data={results} />
             </div>
 
             {/* Table */}
-            <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
+            <div className="bg-white rounded-2xl shadow-sm overflow-hidden">
               <table className="w-full text-sm">
-                <thead className="bg-slate-50 border-b border-slate-200">
+                <thead style={{ backgroundColor: 'var(--maira-green)' }}>
                   <tr>
-                    <th className="text-left px-6 py-3 text-xs font-medium text-slate-500 uppercase tracking-wider">
+                    <th
+                      className="text-left px-6 py-3 text-xs font-bold uppercase tracking-widest"
+                      style={{ color: 'rgba(255,255,255,0.7)', letterSpacing: '0.12em' }}
+                    >
                       Klíčové slovo
                     </th>
-                    <th className="text-right px-6 py-3 text-xs font-medium text-slate-500 uppercase tracking-wider">
+                    <th
+                      className="text-right px-6 py-3 text-xs font-bold uppercase tracking-widest"
+                      style={{ color: 'rgba(255,255,255,0.7)', letterSpacing: '0.12em' }}
+                    >
                       Průměr/měs.
                     </th>
-                    <th className="text-right px-6 py-3 text-xs font-medium text-slate-500 uppercase tracking-wider">
+                    <th
+                      className="text-right px-6 py-3 text-xs font-bold uppercase tracking-widest"
+                      style={{ color: 'rgba(255,255,255,0.7)', letterSpacing: '0.12em' }}
+                    >
                       Min.
                     </th>
-                    <th className="text-right px-6 py-3 text-xs font-medium text-slate-500 uppercase tracking-wider">
+                    <th
+                      className="text-right px-6 py-3 text-xs font-bold uppercase tracking-widest"
+                      style={{ color: 'rgba(255,255,255,0.7)', letterSpacing: '0.12em' }}
+                    >
                       Max.
                     </th>
-                    <th className="text-center px-6 py-3 text-xs font-medium text-slate-500 uppercase tracking-wider">
+                    <th
+                      className="text-center px-6 py-3 text-xs font-bold uppercase tracking-widest"
+                      style={{ color: 'rgba(255,255,255,0.7)', letterSpacing: '0.12em' }}
+                    >
                       Trend
                     </th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-100">
-                  {results.map((r) => (
-                    <tr key={r.keyword} className="hover:bg-slate-50 transition-colors">
-                      <td className="px-6 py-3 font-medium text-slate-900">{r.keyword}</td>
-                      <td className="px-6 py-3 text-right text-slate-600">
+                <tbody>
+                  {results.map((r, idx) => (
+                    <tr
+                      key={r.keyword}
+                      style={{ backgroundColor: idx % 2 === 0 ? '#fff' : '#f9fafb' }}
+                    >
+                      <td className="px-6 py-3 font-semibold" style={{ color: '#111827' }}>
+                        {r.keyword}
+                      </td>
+                      <td className="px-6 py-3 text-right" style={{ color: '#374151' }}>
                         {r.avgVolume.toLocaleString('cs')}
                       </td>
-                      <td className="px-6 py-3 text-right text-slate-400">
+                      <td className="px-6 py-3 text-right" style={{ color: '#9ca3af' }}>
                         {Math.min(...r.monthlyData.map((d) => d.volume)).toLocaleString('cs')}
                       </td>
-                      <td className="px-6 py-3 text-right text-slate-400">
+                      <td className="px-6 py-3 text-right" style={{ color: '#9ca3af' }}>
                         {Math.max(...r.monthlyData.map((d) => d.volume)).toLocaleString('cs')}
                       </td>
                       <td className="px-6 py-3 text-center">
@@ -301,7 +423,17 @@ export default function Home() {
             </div>
           </div>
         )}
-      </div>
-    </main>
+      </main>
+
+      {/* Footer */}
+      <footer style={{ backgroundColor: 'var(--maira-green)' }}>
+        <div
+          className="max-w-5xl mx-auto px-6 py-4 text-center text-xs font-medium uppercase tracking-widest"
+          style={{ color: 'rgba(255,255,255,0.4)', letterSpacing: '0.12em' }}
+        >
+          © {new Date().getFullYear()} Maira Team | Performance Marketing
+        </div>
+      </footer>
+    </div>
   )
 }

@@ -1,3 +1,10 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+:root {
+  --maira-green: #0d2b1e;
+  --maira-green-light: #163d2b;
+  --maira-orange: #e8502a;
+  --maira-orange-hover: #d44420;
+}

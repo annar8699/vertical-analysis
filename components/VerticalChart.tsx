@@ -12,7 +12,7 @@ import {
 } from 'recharts'
 import type { KeywordResult } from '@/lib/trendAnalysis'
 
-const COLORS = ['#2563eb', '#16a34a', '#dc2626', '#9333ea', '#ea580c', '#0891b2', '#65a30d', '#db2777']
+const COLORS = ['#e8502a', '#2563eb', '#16a34a', '#9333ea', '#0891b2', '#65a30d', '#db2777', '#ea580c']
 
 export function VerticalChart({ data }: { data: KeywordResult[] }) {
   if (data.length === 0) return null
@@ -28,32 +28,37 @@ export function VerticalChart({ data }: { data: KeywordResult[] }) {
   return (
     <ResponsiveContainer width="100%" height={320}>
       <LineChart data={chartData} margin={{ top: 5, right: 20, left: 0, bottom: 5 }}>
-        <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
+        <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
         <XAxis
           dataKey="label"
-          tick={{ fontSize: 11, fill: '#94a3b8' }}
+          tick={{ fontSize: 11, fill: '#6b7280', fontFamily: 'var(--font-montserrat)' }}
           tickLine={false}
           axisLine={false}
         />
         <YAxis
-          tick={{ fontSize: 11, fill: '#94a3b8' }}
+          tick={{ fontSize: 11, fill: '#6b7280', fontFamily: 'var(--font-montserrat)' }}
           tickLine={false}
           axisLine={false}
           tickFormatter={(v: number) => (v >= 1000 ? `${(v / 1000).toFixed(0)}k` : String(v))}
           width={40}
         />
         <Tooltip
-          contentStyle={{ borderRadius: '8px', border: '1px solid #e2e8f0', fontSize: '12px' }}
+          contentStyle={{
+            borderRadius: '8px',
+            border: '1px solid #e5e7eb',
+            fontSize: '12px',
+            fontFamily: 'var(--font-montserrat)',
+          }}
           formatter={(value: number, name: string) => [value.toLocaleString('cs'), name]}
         />
-        <Legend wrapperStyle={{ fontSize: '12px', paddingTop: '16px' }} />
+        <Legend wrapperStyle={{ fontSize: '12px', paddingTop: '16px', fontFamily: 'var(--font-montserrat)' }} />
         {data.map((r, i) => (
           <Line
             key={r.keyword}
             type="monotone"
             dataKey={r.keyword}
             stroke={COLORS[i % COLORS.length]}
-            strokeWidth={2}
+            strokeWidth={2.5}
             dot={false}
             activeDot={{ r: 4 }}
           />
