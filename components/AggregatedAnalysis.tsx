@@ -34,7 +34,7 @@ function pctClass(value: number | null) {
 }
 
 export function AggregatedAnalysis({ data }: { data: KeywordResult[] }) {
-  const { matrix, years, chartData, yoyRows } = useMemo(() => {
+  const { matrix, years, chartData, yoyRows, partialYears } = useMemo(() => {
     // Build year → month → total volume
     const matrix: Record<number, Record<number, number>> = {}
 
@@ -58,7 +58,7 @@ export function AggregatedAnalysis({ data }: { data: KeywordResult[] }) {
       return point
     })
 
-    // YoY rows
+    // YoY rows — total only from months present in BOTH years
     const yoyRows = years.slice(1).map((curr, i) => {
       const prev = years[i]
       const months = Array.from({ length: 12 }, (_, m) => {
@@ -67,13 +67,21 @@ export function AggregatedAnalysis({ data }: { data: KeywordResult[] }) {
         if (p === undefined || c === undefined || p === 0) return null
         return (c - p) / p
       })
-      const prevTotal = Object.values(matrix[prev] ?? {}).reduce((a, b) => a + b, 0)
-      const currTotal = Object.values(matrix[curr] ?? {}).reduce((a, b) => a + b, 0)
-      const total = prevTotal > 0 ? (currTotal - prevTotal) / prevTotal : null
+      const sharedMonths = Array.from({ length: 12 }, (_, m) => m + 1).filter(
+        (m) => matrix[prev]?.[m] !== undefined && matrix[curr]?.[m] !== undefined
+      )
+      const prevShared = sharedMonths.reduce((a, m) => a + (matrix[prev][m] ?? 0), 0)
+      const currShared = sharedMonths.reduce((a, m) => a + (matrix[curr][m] ?? 0), 0)
+      const total = sharedMonths.length > 0 && prevShared > 0 ? (currShared - prevShared) / prevShared : null
       return { label: `${prev}/${String(curr).slice(2)}`, months, total }
     })
 
-    return { matrix, years, chartData, yoyRows }
+    // Which years have fewer than 12 months of data
+    const partialYears = new Set(
+      years.filter((y) => Object.keys(matrix[y] ?? {}).length < 12)
+    )
+
+    return { matrix, years, chartData, yoyRows, partialYears }
   }, [data])
 
   if (years.length === 0) return null
@@ -128,8 +136,13 @@ export function AggregatedAnalysis({ data }: { data: KeywordResult[] }) {
                 const total = Object.values(matrix[year] ?? {}).reduce((a, b) => a + b, 0)
                 return (
                   <tr key={year} style={{ backgroundColor: idx % 2 === 0 ? '#fff' : '#f9fafb' }}>
-                    <td className="px-4 py-2.5 font-bold" style={{ color: '#111827' }}>
+                    <td className="px-4 py-2.5 font-bold whitespace-nowrap" style={{ color: '#111827' }}>
                       {year}
+                      {partialYears.has(year) && (
+                        <span className="ml-1.5 text-xs font-normal" style={{ color: '#9ca3af' }}>
+                          (partial)
+                        </span>
+                      )}
                     </td>
                     {Array.from({ length: 12 }, (_, m) => {
                       const v = matrix[year]?.[m + 1]
@@ -200,8 +213,13 @@ export function AggregatedAnalysis({ data }: { data: KeywordResult[] }) {
             <tbody>
               {yoyRows.map((row, idx) => (
                 <tr key={row.label} style={{ backgroundColor: idx % 2 === 0 ? '#fff' : '#f9fafb' }}>
-                  <td className="px-4 py-2.5 font-bold" style={{ color: '#111827' }}>
+                  <td className="px-4 py-2.5 font-bold whitespace-nowrap" style={{ color: '#111827' }}>
                     {row.label}
+                    {(partialYears.has(years[idx]) || partialYears.has(years[idx + 1])) && (
+                      <span className="ml-1.5 text-xs font-normal" style={{ color: '#9ca3af' }}>
+                        *
+                      </span>
+                    )}
                   </td>
                   {row.months.map((v, m) => (
                     <td key={m} className={`${tdStyle} font-medium ${pctClass(v)}`}>
@@ -217,6 +235,12 @@ export function AggregatedAnalysis({ data }: { data: KeywordResult[] }) {
           </table>
         </div>
       </div>
+
+      {yoyRows.some((_, i) => partialYears.has(years[i]) || partialYears.has(years[i + 1])) && (
+        <p className="text-xs -mt-4" style={{ color: '#9ca3af' }}>
+          * YoY total calculated only from months available in both years. Partial year = fewer than 12 months of data.
+        </p>
+      )}
 
       {/* Annual trend chart */}
       <div className="bg-white rounded-2xl p-6 shadow-sm">
