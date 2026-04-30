@@ -11,11 +11,11 @@ export async function POST(req: NextRequest) {
     const months: number = body.months ?? 12
 
     if (!Array.isArray(keywords) || keywords.length === 0) {
-      return NextResponse.json({ error: 'Chybí klíčová slova.' }, { status: 400 })
+      return NextResponse.json({ error: 'No keywords provided.' }, { status: 400 })
     }
 
     if (keywords.length > 20) {
-      return NextResponse.json({ error: 'Maximum je 20 klíčových slov najednou.' }, { status: 400 })
+      return NextResponse.json({ error: 'Maximum 20 keywords at a time.' }, { status: 400 })
     }
 
     const results = USE_MOCK
@@ -26,7 +26,7 @@ export async function POST(req: NextRequest) {
   } catch (err) {
     console.error(err)
     return NextResponse.json(
-      { error: err instanceof Error ? err.message : 'Interní chyba serveru.' },
+      { error: err instanceof Error ? err.message : 'Internal server error.' },
       { status: 500 }
     )
   }

@@ -49,7 +49,7 @@ export function VerticalChart({ data }: { data: KeywordResult[] }) {
             fontSize: '12px',
             fontFamily: 'var(--font-montserrat)',
           }}
-          formatter={(value: number, name: string) => [value.toLocaleString('cs'), name]}
+          formatter={(value: number, name: string) => [value.toLocaleString('en'), name]}
         />
         <Legend wrapperStyle={{ fontSize: '12px', paddingTop: '16px', fontFamily: 'var(--font-montserrat)' }} />
         {data.map((r, i) => (

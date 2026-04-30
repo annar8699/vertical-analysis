@@ -6,12 +6,12 @@ const montserrat = Montserrat({ subsets: ['latin'], variable: '--font-montserrat
 
 export const metadata: Metadata = {
   title: 'Vertical Analysis | Maira',
-  description: 'Analýza vývoje hledanosti klíčových slov',
+  description: 'Keyword search volume trend analysis',
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="cs">
+    <html lang="en">
       <body className={`${montserrat.variable} font-sans`} style={{ fontFamily: 'var(--font-montserrat), sans-serif' }}>
         {children}
       </body>

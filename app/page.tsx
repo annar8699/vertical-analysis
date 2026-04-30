@@ -15,15 +15,15 @@ const GEOS = [
 
 function downloadCSV(results: KeywordResult[]) {
   const headers = [
-    'Klíčové slovo',
-    'Průměr/měs.',
+    'Keyword',
+    'Avg / month',
     'Trend',
     ...results[0].monthlyData.map((m) => m.label),
   ]
   const rows = results.map((r) => [
     r.keyword,
     r.avgVolume,
-    r.trend === 'growing' ? 'Rostoucí' : r.trend === 'declining' ? 'Klesající' : 'Stabilní',
+    r.trend === 'growing' ? 'Growing' : r.trend === 'declining' ? 'Declining' : 'Stable',
     ...r.monthlyData.map((m) => m.volume),
   ])
 
@@ -32,7 +32,7 @@ function downloadCSV(results: KeywordResult[]) {
   const url = URL.createObjectURL(blob)
   const a = document.createElement('a')
   a.href = url
-  a.download = 'vertical-analysis.csv'
+  a.download = 'vertical-analysis-export.csv'
   a.click()
   URL.revokeObjectURL(url)
 }
@@ -71,7 +71,7 @@ export default function Home() {
         setKeywordsText(keywords.join('\n'))
       }
     } catch {
-      setError('Nepodařilo se načíst soubor. Zkus CSV nebo XLSX formát.')
+      setError('Failed to load file. Try CSV or XLSX format.')
     }
 
     e.target.value = ''
@@ -84,12 +84,12 @@ export default function Home() {
       .filter(Boolean)
 
     if (keywords.length === 0) {
-      setError('Zadej alespoň jedno klíčové slovo.')
+      setError('Enter at least one keyword.')
       return
     }
 
     if (keywords.length > 20) {
-      setError('Maximum je 20 klíčových slov najednou.')
+      setError('Maximum 20 keywords at a time.')
       return
     }
 
@@ -110,7 +110,7 @@ export default function Home() {
       setResults(data.results)
       setIsMock(data.mock)
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Neznámá chyba.')
+      setError(err instanceof Error ? err.message : 'Unknown error.')
     } finally {
       setLoading(false)
     }
@@ -129,7 +129,7 @@ export default function Home() {
               Vertical Analysis
             </h1>
             <p className="text-sm mt-0.5" style={{ color: 'rgba(255,255,255,0.55)' }}>
-              Analýza vývoje hledanosti klíčových slov
+              Keyword search volume trend analysis
             </p>
           </div>
           <span
@@ -152,15 +152,15 @@ export default function Home() {
             className="text-xs font-bold uppercase tracking-widest mb-1"
             style={{ color: 'var(--maira-green)', letterSpacing: '0.15em' }}
           >
-            Klíčová slova
+            Keywords
           </h2>
           <p className="text-xs mb-3" style={{ color: '#9ca3af' }}>
-            Maximálně 20 klíčových slov, jedno na řádek
+            Up to 20 keywords, one per line
           </p>
           <textarea
             value={keywordsText}
             onChange={(e) => setKeywordsText(e.target.value)}
-            placeholder={'nábytek\npohovka\nkřeslo na míru'}
+            placeholder={'furniture\nsofa\ncustom armchair'}
             className="w-full h-36 px-3 py-2 text-sm border rounded-xl resize-none focus:outline-none font-mono"
             style={{
               borderColor: '#e5e7eb',
@@ -190,7 +190,7 @@ export default function Home() {
                   d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
                 />
               </svg>
-              Nahrát CSV / Excel
+              Upload CSV / Excel
               <input
                 type="file"
                 accept=".csv,.xlsx,.xls"
@@ -199,7 +199,7 @@ export default function Home() {
               />
             </label>
             <span className="text-xs" style={{ color: '#d1d5db' }}>
-              Sloupec A = seznam keywords
+              Column A = keyword list
             </span>
           </div>
         </div>
@@ -211,7 +211,7 @@ export default function Home() {
               className="block text-xs font-bold uppercase tracking-widest mb-1.5"
               style={{ color: 'var(--maira-green)', letterSpacing: '0.12em' }}
             >
-              Trh
+              Market
             </label>
             <select
               value={geo}
@@ -231,7 +231,7 @@ export default function Home() {
               className="block text-xs font-bold uppercase tracking-widest mb-1.5"
               style={{ color: 'var(--maira-green)', letterSpacing: '0.12em' }}
             >
-              Období
+              Period
             </label>
             <select
               value={months}
@@ -239,9 +239,9 @@ export default function Home() {
               className="px-3 py-2 text-sm border rounded-xl bg-white focus:outline-none"
               style={{ borderColor: '#e5e7eb', color: '#1f2937' }}
             >
-              <option value={12}>Posledních 12 měsíců</option>
-              <option value={24}>Posledních 24 měsíců</option>
-              <option value={36}>Posledních 36 měsíců</option>
+              <option value={12}>Last 12 months</option>
+              <option value={24}>Last 24 months</option>
+              <option value={36}>Last 36 months</option>
             </select>
           </div>
         </div>
@@ -273,7 +273,7 @@ export default function Home() {
               (e.currentTarget as HTMLButtonElement).style.backgroundColor = 'var(--maira-orange)'
           }}
         >
-          {loading ? 'Načítám data…' : 'Analyzovat vertikálu'}
+          {loading ? 'Loading data…' : 'Analyze vertical'}
         </button>
 
         {/* Results */}
@@ -288,8 +288,7 @@ export default function Home() {
                   color: '#92400e',
                 }}
               >
-                Zobrazena jsou ukázková data. Pro reálná data nastav Google Ads API credentials v
-                prostředí Vercelu.
+                Sample data is shown. For real data, set Google Ads API credentials in Vercel environment variables.
               </div>
             )}
 
@@ -300,7 +299,7 @@ export default function Home() {
                   className="text-xs font-bold uppercase tracking-widest"
                   style={{ color: 'var(--maira-green)', letterSpacing: '0.15em' }}
                 >
-                  Přehled
+                  Overview
                 </h2>
                 <button
                   onClick={() => downloadCSV(results)}
@@ -338,7 +337,7 @@ export default function Home() {
                         {r.keyword}
                       </p>
                       <p className="text-xs mt-0.5" style={{ color: '#9ca3af' }}>
-                        {r.avgVolume.toLocaleString('cs')} hledání/měs.
+                        {r.avgVolume.toLocaleString('en')} searches/mo.
                       </p>
                     </div>
                     <TrendBadge trend={r.trend} />
@@ -353,7 +352,7 @@ export default function Home() {
                 className="text-xs font-bold uppercase tracking-widest mb-4"
                 style={{ color: 'var(--maira-green)', letterSpacing: '0.15em' }}
               >
-                Vývoj hledanosti
+                Search Volume Trend
               </h2>
               <VerticalChart data={results} />
             </div>
@@ -367,13 +366,13 @@ export default function Home() {
                       className="text-left px-6 py-3 text-xs font-bold uppercase tracking-widest"
                       style={{ color: 'rgba(255,255,255,0.7)', letterSpacing: '0.12em' }}
                     >
-                      Klíčové slovo
+                      Keyword
                     </th>
                     <th
                       className="text-right px-6 py-3 text-xs font-bold uppercase tracking-widest"
                       style={{ color: 'rgba(255,255,255,0.7)', letterSpacing: '0.12em' }}
                     >
-                      Průměr/měs.
+                      Avg / mo.
                     </th>
                     <th
                       className="text-right px-6 py-3 text-xs font-bold uppercase tracking-widest"
@@ -405,13 +404,13 @@ export default function Home() {
                         {r.keyword}
                       </td>
                       <td className="px-6 py-3 text-right" style={{ color: '#374151' }}>
-                        {r.avgVolume.toLocaleString('cs')}
+                        {r.avgVolume.toLocaleString('en')}
                       </td>
                       <td className="px-6 py-3 text-right" style={{ color: '#9ca3af' }}>
-                        {Math.min(...r.monthlyData.map((d) => d.volume)).toLocaleString('cs')}
+                        {Math.min(...r.monthlyData.map((d) => d.volume)).toLocaleString('en')}
                       </td>
                       <td className="px-6 py-3 text-right" style={{ color: '#9ca3af' }}>
-                        {Math.max(...r.monthlyData.map((d) => d.volume)).toLocaleString('cs')}
+                        {Math.max(...r.monthlyData.map((d) => d.volume)).toLocaleString('en')}
                       </td>
                       <td className="px-6 py-3 text-center">
                         <TrendBadge trend={r.trend} />
