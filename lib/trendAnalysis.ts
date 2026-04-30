@@ -26,26 +26,23 @@ export function calcAvg(data: MonthlyVolume[]): number {
 }
 
 export function calculateTrend(data: MonthlyVolume[]): TrendDirection {
-  if (data.length < 3) return 'stable'
+  if (data.length < 24) return 'stable'
 
-  const n = data.length
-  const xMean = (n - 1) / 2
-  const yMean = data.reduce((sum, d) => sum + d.volume, 0) / n
+  const sorted = [...data].sort((a, b) =>
+    a.year !== b.year ? a.year - b.year : a.month - b.month
+  )
 
-  if (yMean === 0) return 'stable'
+  const last12 = sorted.slice(-12)
+  const prev12 = sorted.slice(-24, -12)
 
-  let numerator = 0
-  let denominator = 0
+  const avgLast = last12.reduce((s, d) => s + d.volume, 0) / 12
+  const avgPrev = prev12.reduce((s, d) => s + d.volume, 0) / 12
 
-  data.forEach((d, i) => {
-    numerator += (i - xMean) * (d.volume - yMean)
-    denominator += Math.pow(i - xMean, 2)
-  })
+  if (avgPrev === 0) return 'stable'
 
-  const slope = denominator !== 0 ? numerator / denominator : 0
-  const slopePercent = (slope / yMean) * 100
+  const yoy = (avgLast - avgPrev) / avgPrev
 
-  if (slopePercent > 3) return 'growing'
-  if (slopePercent < -3) return 'declining'
+  if (yoy > 0.05) return 'growing'
+  if (yoy < -0.05) return 'declining'
   return 'stable'
 }
