@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useCallback } from 'react'
-import { VerticalChart } from '@/components/VerticalChart'
+import { TotalTrendChart } from '@/components/TotalTrendChart'
 import { TrendBadge } from '@/components/TrendBadge'
 import { AggregatedAnalysis } from '@/components/AggregatedAnalysis'
 import type { KeywordResult } from '@/lib/trendAnalysis'
@@ -383,15 +383,18 @@ export default function Home() {
               </div>
             </div>
 
-            {/* Chart */}
+            {/* Total trend chart */}
             <div className="bg-white rounded-2xl p-6 shadow-sm">
               <h2
-                className="text-xs font-bold uppercase tracking-widest mb-4"
+                className="text-xs font-bold uppercase tracking-widest mb-1"
                 style={{ color: 'var(--maira-green)', letterSpacing: '0.15em' }}
               >
-                Search Volume Trend
+                Total Search Volume Trend
               </h2>
-              <VerticalChart data={results} />
+              <p className="text-xs mb-4" style={{ color: '#9ca3af' }}>
+                Sum of all keywords over the full period
+              </p>
+              <TotalTrendChart data={results} />
             </div>
 
             {/* Table */}
