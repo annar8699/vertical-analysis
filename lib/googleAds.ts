@@ -42,13 +42,16 @@ export async function fetchKeywordVolumes(
   const customerId = process.env.GOOGLE_ADS_CUSTOMER_ID!.replace(/-/g, '')
 
   const response = await fetch(
-    `https://googleads.googleapis.com/v17/customers/${customerId}/keywordPlanIdeas:generateKeywordHistoricalMetrics`,
+    `https://googleads.googleapis.com/v19/customers/${customerId}/keywordPlanIdeas:generateKeywordHistoricalMetrics`,
     {
       method: 'POST',
       headers: {
         Authorization: `Bearer ${accessToken}`,
         'developer-token': process.env.GOOGLE_ADS_DEVELOPER_TOKEN!,
         'Content-Type': 'application/json',
+        ...(process.env.GOOGLE_ADS_LOGIN_CUSTOMER_ID
+          ? { 'login-customer-id': process.env.GOOGLE_ADS_LOGIN_CUSTOMER_ID }
+          : {}),
       },
       body: JSON.stringify({
         keywords,
