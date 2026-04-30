@@ -1,5 +1,17 @@
 import { MonthlyVolume, KeywordResult, formatMonthLabel, calculateTrend, calcAvg } from './trendAnalysis'
 
+const MONTH_ENUM: Record<string, number> = {
+  JANUARY: 1, FEBRUARY: 2, MARCH: 3, APRIL: 4,
+  MAY: 5, JUNE: 6, JULY: 7, AUGUST: 8,
+  SEPTEMBER: 9, OCTOBER: 10, NOVEMBER: 11, DECEMBER: 12,
+}
+
+function parseMonth(m: unknown): number {
+  if (typeof m === 'number') return m
+  if (typeof m === 'string') return MONTH_ENUM[m.toUpperCase()] ?? 0
+  return 0
+}
+
 const GEO_TARGETS: Record<string, string> = {
   CZ: 'geoTargetConstants/2203',
   SK: 'geoTargetConstants/2703',
@@ -76,17 +88,18 @@ export async function fetchKeywordVolumes(
 
     const sorted = [...monthlySearchVolumes]
       .sort((a, b) => {
-        if (a.year !== b.year) return (a.year as number) - (b.year as number)
-        return (a.month as number) - (b.month as number)
+        const yearDiff = parseInt(String(a.year ?? 0), 10) - parseInt(String(b.year ?? 0), 10)
+        if (yearDiff !== 0) return yearDiff
+        return parseMonth(a.month) - parseMonth(b.month)
       })
       .slice(-months)
 
-    const monthlyData: MonthlyVolume[] = sorted.map((m) => ({
-      year: m.year as number,
-      month: m.month as number,
-      volume: parseInt(String(m.monthlySearches ?? m.monthlySearchVolume ?? 0), 10) || 0,
-      label: formatMonthLabel(m.year as number, m.month as number),
-    }))
+    const monthlyData: MonthlyVolume[] = sorted.map((m) => {
+      const year = parseInt(String(m.year ?? 0), 10)
+      const month = parseMonth(m.month)
+      const volume = parseInt(String(m.monthlySearches ?? m.monthlySearchVolume ?? 0), 10) || 0
+      return { year, month, volume, label: formatMonthLabel(year, month) }
+    })
 
     return {
       keyword,
