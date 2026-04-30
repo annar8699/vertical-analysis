@@ -7,11 +7,11 @@ import { AggregatedAnalysis } from '@/components/AggregatedAnalysis'
 import type { KeywordResult } from '@/lib/trendAnalysis'
 
 const GEOS = [
-  { value: 'CZ', label: 'Česká republika' },
-  { value: 'SK', label: 'Slovensko' },
-  { value: 'PL', label: 'Polsko' },
-  { value: 'DE', label: 'Německo' },
-  { value: 'AT', label: 'Rakousko' },
+  { value: 'CZ', label: 'Czech Republic' },
+  { value: 'SK', label: 'Slovakia' },
+  { value: 'PL', label: 'Poland' },
+  { value: 'DE', label: 'Germany' },
+  { value: 'AT', label: 'Austria' },
 ]
 
 function downloadCSV(results: KeywordResult[]) {
