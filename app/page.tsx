@@ -3,6 +3,7 @@
 import { useState, useCallback } from 'react'
 import { VerticalChart } from '@/components/VerticalChart'
 import { TrendBadge } from '@/components/TrendBadge'
+import { AggregatedAnalysis } from '@/components/AggregatedAnalysis'
 import type { KeywordResult } from '@/lib/trendAnalysis'
 
 const GEOS = [
@@ -40,7 +41,7 @@ function downloadCSV(results: KeywordResult[]) {
 export default function Home() {
   const [keywordsText, setKeywordsText] = useState('')
   const [geo, setGeo] = useState('CZ')
-  const [months, setMonths] = useState(12)
+  const [months, setMonths] = useState(48)
   const [results, setResults] = useState<KeywordResult[] | null>(null)
   const [isMock, setIsMock] = useState(false)
   const [loading, setLoading] = useState(false)
@@ -239,9 +240,10 @@ export default function Home() {
               className="px-3 py-2 text-sm border rounded-xl bg-white focus:outline-none"
               style={{ borderColor: '#e5e7eb', color: '#1f2937' }}
             >
-              <option value={12}>Last 12 months</option>
-              <option value={24}>Last 24 months</option>
+              <option value={48}>Maximum available (4 years)</option>
               <option value={36}>Last 36 months</option>
+              <option value={24}>Last 24 months</option>
+              <option value={12}>Last 12 months</option>
             </select>
           </div>
         </div>
@@ -292,15 +294,23 @@ export default function Home() {
               </div>
             )}
 
+            {/* Aggregated analysis: volume matrix + YoY + annual chart */}
+            <AggregatedAnalysis data={results} />
+
             {/* Summary cards */}
             <div className="bg-white rounded-2xl p-6 shadow-sm">
               <div className="flex items-center justify-between mb-4">
-                <h2
-                  className="text-xs font-bold uppercase tracking-widest"
-                  style={{ color: 'var(--maira-green)', letterSpacing: '0.15em' }}
-                >
-                  Overview
-                </h2>
+                <div>
+                  <h2
+                    className="text-xs font-bold uppercase tracking-widest"
+                    style={{ color: 'var(--maira-green)', letterSpacing: '0.15em' }}
+                  >
+                    Keyword Breakdown
+                  </h2>
+                  <p className="text-xs mt-0.5" style={{ color: '#9ca3af' }}>
+                    Average monthly volume &amp; trend per keyword
+                  </p>
+                </div>
                 <button
                   onClick={() => downloadCSV(results)}
                   className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium border rounded-lg transition-colors"
