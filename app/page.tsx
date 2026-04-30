@@ -70,6 +70,8 @@ export default function Home() {
   const [geo, setGeo] = useState('CZ')
   const [months, setMonths] = useState(48)
   const [results, setResults] = useState<KeywordResult[] | null>(null)
+  const [sortKey, setSortKey] = useState<'keyword' | 'avg' | 'min' | 'max' | 'trend' | null>(null)
+  const [sortDir, setSortDir] = useState<'desc' | 'asc'>('desc')
   const [isMock, setIsMock] = useState(false)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -143,6 +145,28 @@ export default function Home() {
       setLoading(false)
     }
   }
+
+  const TREND_ORDER = { growing: 2, stable: 1, declining: 0 }
+
+  function handleSort(key: typeof sortKey) {
+    if (sortKey === key) setSortDir((d) => (d === 'desc' ? 'asc' : 'desc'))
+    else { setSortKey(key); setSortDir('desc') }
+  }
+
+  const sortedResults = results
+    ? [...results].sort((a, b) => {
+        const mul = sortDir === 'desc' ? -1 : 1
+        if (sortKey === 'keyword') return mul * a.keyword.localeCompare(b.keyword)
+        if (sortKey === 'avg') return mul * (a.avgVolume - b.avgVolume)
+        if (sortKey === 'min')
+          return mul * (Math.min(...a.monthlyData.map((d) => d.volume)) - Math.min(...b.monthlyData.map((d) => d.volume)))
+        if (sortKey === 'max')
+          return mul * (Math.max(...a.monthlyData.map((d) => d.volume)) - Math.max(...b.monthlyData.map((d) => d.volume)))
+        if (sortKey === 'trend')
+          return mul * (TREND_ORDER[a.trend] - TREND_ORDER[b.trend])
+        return 0
+      })
+    : results
 
   return (
     <div className="min-h-screen flex flex-col" style={{ backgroundColor: '#f5f5f0' }}>
@@ -402,40 +426,31 @@ export default function Home() {
               <table className="w-full text-sm">
                 <thead style={{ backgroundColor: 'var(--maira-green)' }}>
                   <tr>
-                    <th
-                      className="text-left px-6 py-3 text-xs font-bold uppercase tracking-widest"
-                      style={{ color: 'rgba(255,255,255,0.7)', letterSpacing: '0.12em' }}
-                    >
-                      Keyword
-                    </th>
-                    <th
-                      className="text-right px-6 py-3 text-xs font-bold uppercase tracking-widest"
-                      style={{ color: 'rgba(255,255,255,0.7)', letterSpacing: '0.12em' }}
-                    >
-                      Avg / mo.
-                    </th>
-                    <th
-                      className="text-right px-6 py-3 text-xs font-bold uppercase tracking-widest"
-                      style={{ color: 'rgba(255,255,255,0.7)', letterSpacing: '0.12em' }}
-                    >
-                      Min.
-                    </th>
-                    <th
-                      className="text-right px-6 py-3 text-xs font-bold uppercase tracking-widest"
-                      style={{ color: 'rgba(255,255,255,0.7)', letterSpacing: '0.12em' }}
-                    >
-                      Max.
-                    </th>
-                    <th
-                      className="text-center px-6 py-3 text-xs font-bold uppercase tracking-widest"
-                      style={{ color: 'rgba(255,255,255,0.7)', letterSpacing: '0.12em' }}
-                    >
-                      Trend
-                    </th>
+                    {(
+                      [
+                        { key: 'keyword', label: 'Keyword', align: 'left' },
+                        { key: 'avg',     label: 'Avg / mo.', align: 'right' },
+                        { key: 'min',     label: 'Min.',      align: 'right' },
+                        { key: 'max',     label: 'Max.',      align: 'right' },
+                        { key: 'trend',   label: 'Trend',     align: 'center' },
+                      ] as const
+                    ).map(({ key, label, align }) => (
+                      <th
+                        key={key}
+                        onClick={() => handleSort(key)}
+                        className={`px-6 py-3 text-xs font-bold uppercase tracking-widest cursor-pointer select-none text-${align}`}
+                        style={{ color: sortKey === key ? '#fff' : 'rgba(255,255,255,0.7)', letterSpacing: '0.12em' }}
+                      >
+                        {label}
+                        <span className="ml-1 opacity-60">
+                          {sortKey === key ? (sortDir === 'desc' ? ' ↓' : ' ↑') : ' ↕'}
+                        </span>
+                      </th>
+                    ))}
                   </tr>
                 </thead>
                 <tbody>
-                  {results.map((r, idx) => (
+                  {sortedResults!.map((r, idx) => (
                     <tr
                       key={r.keyword}
                       style={{ backgroundColor: idx % 2 === 0 ? '#fff' : '#f9fafb' }}
