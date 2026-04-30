@@ -99,6 +99,11 @@ async function getAccessToken(): Promise<string> {
   return data.access_token
 }
 
+const MONTH_NAMES = [
+  'JANUARY','FEBRUARY','MARCH','APRIL','MAY','JUNE',
+  'JULY','AUGUST','SEPTEMBER','OCTOBER','NOVEMBER','DECEMBER',
+]
+
 export async function fetchKeywordVolumes(
   keywords: string[],
   geo: string,
@@ -106,6 +111,9 @@ export async function fetchKeywordVolumes(
 ): Promise<KeywordResult[]> {
   const accessToken = await getAccessToken()
   const customerId = process.env.GOOGLE_ADS_CUSTOMER_ID!.replace(/-/g, '')
+
+  const now = new Date()
+  const start = new Date(now.getFullYear(), now.getMonth() - months, 1)
 
   const response = await fetch(
     `https://googleads.googleapis.com/v21/customers/${customerId}:generateKeywordHistoricalMetrics`,
@@ -124,6 +132,12 @@ export async function fetchKeywordVolumes(
         geoTargetConstants: [GEO_TARGETS[geo] ?? GEO_TARGETS.CZ],
         keywordPlanNetwork: 'GOOGLE_SEARCH',
         language: LANGUAGE_CODES[geo] ?? LANGUAGE_CODES.CZ,
+        historicalMetricsOptions: {
+          yearMonthRange: {
+            start: { year: start.getFullYear(), month: MONTH_NAMES[start.getMonth()] },
+            end:   { year: now.getFullYear(),   month: MONTH_NAMES[now.getMonth()] },
+          },
+        },
       }),
     }
   )
