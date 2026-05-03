@@ -387,7 +387,7 @@ export default function Home() {
                 </div>
                 <h3 className="text-sm font-bold mb-1" style={{ color: '#111827' }}>Manual entry</h3>
                 <p className="text-xs leading-relaxed" style={{ color: '#9ca3af' }}>
-                  Type or paste keywords directly — one per line, up to 1,000 keywords
+                  Type or paste keywords directly — one per line, up to 5,000 keywords
                 </p>
               </button>
 
