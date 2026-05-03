@@ -318,29 +318,34 @@ export default function Home() {
                         </tbody>
                       </table>
                     </div>
-                    {/* Mini chart bars */}
+                    {/* Mini line chart */}
                     <div className="px-4 pb-4">
                       <p className="text-xs font-bold uppercase tracking-widest mb-2" style={{ color: '#0A2B1D', fontSize: '9px', letterSpacing: '0.12em' }}>Annual Trend</p>
-                      <div className="flex items-end gap-1 h-14">
-                        {[
-                          { h2023: 55, h2024: 62, h2025: 70 },
-                          { h2023: 50, h2024: 57, h2025: 64 },
-                          { h2023: 65, h2024: 72, h2025: 82 },
-                          { h2023: 100, h2024: 108, h2025: 100 },
-                          { h2023: 95, h2024: 100, h2025: 100 },
-                          { h2023: 80, h2024: 88, h2025: 72 },
-                        ].map((m, i) => (
-                          <div key={i} className="flex items-end gap-px flex-1">
-                            <div className="flex-1 rounded-sm" style={{ height: `${m.h2023 * 0.56}px`, backgroundColor: '#1d6b52', opacity: 0.7 }} />
-                            <div className="flex-1 rounded-sm" style={{ height: `${m.h2024 * 0.56}px`, backgroundColor: '#0ea5e9', opacity: 0.7 }} />
-                            <div className="flex-1 rounded-sm" style={{ height: `${m.h2025 * 0.56}px`, backgroundColor: '#FF4D30', opacity: 0.9 }} />
-                          </div>
+                      <svg viewBox="0 0 280 70" className="w-full" style={{ overflow: 'visible' }}>
+                        {/* Grid lines */}
+                        {[0,1,2,3].map(i => (
+                          <line key={i} x1="0" y1={i * 22} x2="280" y2={i * 22} stroke="#e5e7eb" strokeWidth="0.5" />
                         ))}
-                      </div>
-                      <div className="flex gap-3 mt-2">
+                        {/* 2023 — green */}
+                        <polyline
+                          points="0,42 46,46 92,38 138,10 184,14 230,28 276,32"
+                          fill="none" stroke="#1d6b52" strokeWidth="2" strokeLinejoin="round"
+                        />
+                        {/* 2024 — blue */}
+                        <polyline
+                          points="0,36 46,40 92,30 138,4 184,8 230,20 276,24"
+                          fill="none" stroke="#0ea5e9" strokeWidth="2" strokeLinejoin="round"
+                        />
+                        {/* 2025 — orange */}
+                        <polyline
+                          points="0,30 46,34 92,24 138,0 184,4 230,16"
+                          fill="none" stroke="#FF4D30" strokeWidth="2" strokeLinejoin="round"
+                        />
+                      </svg>
+                      <div className="flex gap-3 mt-1">
                         {[['#1d6b52','2023'],['#0ea5e9','2024'],['#FF4D30','2025']].map(([c,y]) => (
                           <div key={y} className="flex items-center gap-1">
-                            <div className="w-2 h-2 rounded-sm" style={{ backgroundColor: c }} />
+                            <div className="w-3 h-0.5 rounded" style={{ backgroundColor: c }} />
                             <span style={{ fontSize: '8px', color: '#6b7280' }}>{y}</span>
                           </div>
                         ))}
