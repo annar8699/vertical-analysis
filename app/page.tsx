@@ -618,7 +618,7 @@ export default function Home() {
             <AggregatedAnalysis data={results} />
 
             {/* Keyword Breakdown — grouped accordion */}
-            <div className="bg-white rounded-2xl shadow-sm overflow-hidden">
+            <div className="bg-white rounded-2xl shadow-sm">
               <div className="px-6 py-4" style={{ borderBottom: '1px solid #f3f4f6' }}>
                 <div className="flex items-center gap-2">
                   <h2
@@ -635,7 +635,7 @@ export default function Home() {
                       ?
                     </button>
                     <div
-                      className="absolute left-0 top-6 z-10 w-72 rounded-xl p-4 text-xs leading-relaxed opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity"
+                      className="absolute left-0 top-7 z-50 w-80 rounded-xl p-4 text-xs leading-relaxed opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity"
                       style={{ backgroundColor: '#0A2B1D', color: 'rgba(255,255,255,0.85)', boxShadow: '0 8px 24px rgba(0,0,0,0.18)' }}
                     >
                       <p className="font-bold mb-2" style={{ color: '#fff' }}>How is the trend calculated?</p>
