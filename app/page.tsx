@@ -128,7 +128,7 @@ export default function Home() {
       const res = await fetch('/api/generate-keywords', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ url: aiUrl, description: aiDescription, seeds: aiSeeds }),
+        body: JSON.stringify({ url: aiUrl, description: aiDescription, seeds: aiSeeds, geo }),
       })
 
       const data = await res.json()
@@ -325,16 +325,10 @@ export default function Home() {
                   </svg>
                 </div>
                 <h3 className="text-sm font-bold mb-1" style={{ color: '#111827' }}>
-                  AI keyword suggestions
-                  <span
-                    className="ml-2 text-xs font-semibold px-1.5 py-0.5 rounded-md"
-                    style={{ backgroundColor: '#fff4f2', color: 'var(--maira-orange)' }}
-                  >
-                    AI
-                  </span>
+                  Keyword ideas
                 </h3>
                 <p className="text-xs leading-relaxed" style={{ color: '#9ca3af' }}>
-                  Describe your business or provide a URL and seed keywords — AI generates a list you can edit
+                  Enter a URL or seed keywords — get suggestions from Google Keyword Planner
                 </p>
               </button>
             </div>
@@ -425,24 +419,35 @@ export default function Home() {
                 className="text-xs font-bold uppercase tracking-widest"
                 style={{ color: 'var(--maira-green)', letterSpacing: '0.15em' }}
               >
-                AI keyword suggestions
+                Keyword ideas
               </h2>
-              <span
-                className="text-xs font-semibold px-1.5 py-0.5 rounded-md"
-                style={{ backgroundColor: '#fff4f2', color: 'var(--maira-orange)' }}
-              >
-                AI
-              </span>
             </div>
             <p className="text-xs mb-5" style={{ color: '#9ca3af' }}>
-              Fill in any combination of the fields below — all are optional
+              Get keyword suggestions from Google Keyword Planner based on your URL or seed keywords
             </p>
 
             <div className="space-y-4">
+              {/* Market */}
+              <div>
+                <label className="block text-xs font-semibold mb-1.5" style={{ color: '#374151' }}>
+                  Market
+                </label>
+                <select
+                  value={geo}
+                  onChange={(e) => setGeo(e.target.value)}
+                  className="px-3 py-2 text-sm border rounded-xl bg-white focus:outline-none"
+                  style={{ borderColor: '#e5e7eb', color: '#1f2937' }}
+                >
+                  {GEOS.map((g) => (
+                    <option key={g.value} value={g.value}>{g.label}</option>
+                  ))}
+                </select>
+              </div>
+
               {/* URL */}
               <div>
                 <label className="block text-xs font-semibold mb-1.5" style={{ color: '#374151' }}>
-                  Website / domain
+                  Website / domain <span className="font-normal" style={{ color: '#9ca3af' }}>(optional)</span>
                 </label>
                 <input
                   type="text"
@@ -456,33 +461,16 @@ export default function Home() {
                 />
               </div>
 
-              {/* Description */}
-              <div>
-                <label className="block text-xs font-semibold mb-1.5" style={{ color: '#374151' }}>
-                  Business / vertical description
-                </label>
-                <textarea
-                  value={aiDescription}
-                  onChange={(e) => setAiDescription(e.target.value)}
-                  placeholder="e.g. Online store selling outdoor furniture and garden accessories"
-                  rows={3}
-                  className="w-full px-3 py-2 text-sm border rounded-xl resize-y focus:outline-none transition-all"
-                  style={{ borderColor: '#e5e7eb', color: '#1f2937' }}
-                  onFocus={focusOrange}
-                  onBlur={blurGray}
-                />
-              </div>
-
               {/* Seed keywords */}
               <div>
                 <label className="block text-xs font-semibold mb-1.5" style={{ color: '#374151' }}>
-                  Seed keywords
+                  Seed keywords <span className="font-normal" style={{ color: '#9ca3af' }}>(optional)</span>
                 </label>
                 <textarea
                   value={aiSeeds}
                   onChange={(e) => setAiSeeds(e.target.value)}
                   placeholder="garden furniture, outdoor sofa, patio table"
-                  rows={2}
+                  rows={3}
                   className="w-full px-3 py-2 text-sm border rounded-xl resize-y focus:outline-none font-mono transition-all"
                   style={{ borderColor: '#e5e7eb', color: '#1f2937' }}
                   onFocus={focusOrange}
@@ -503,11 +491,11 @@ export default function Home() {
 
             <button
               onClick={handleGenerateKeywords}
-              disabled={aiLoading || (!aiUrl.trim() && !aiDescription.trim() && !aiSeeds.trim())}
+              disabled={aiLoading || (!aiUrl.trim() && !aiSeeds.trim())}
               className="mt-5 w-full py-3 text-white text-sm font-bold uppercase tracking-widest rounded-xl transition-colors disabled:opacity-40"
               style={{
                 backgroundColor:
-                  aiLoading || (!aiUrl.trim() && !aiDescription.trim() && !aiSeeds.trim())
+                  aiLoading || (!aiUrl.trim() && !aiSeeds.trim())
                     ? '#9ca3af'
                     : 'var(--maira-orange)',
                 letterSpacing: '0.12em',

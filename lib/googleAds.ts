@@ -12,7 +12,7 @@ function parseMonth(m: unknown): number {
   return 0
 }
 
-const GEO_TARGETS: Record<string, string> = {
+export const GEO_TARGETS: Record<string, string> = {
   AT: 'geoTargetConstants/2040',
   BE: 'geoTargetConstants/2056',
   BG: 'geoTargetConstants/2100',
@@ -47,7 +47,7 @@ const GEO_TARGETS: Record<string, string> = {
   UA: 'geoTargetConstants/2804',
 }
 
-const LANGUAGE_CODES: Record<string, string> = {
+export const LANGUAGE_CODES: Record<string, string> = {
   AT: 'languageConstants/1001',
   BE: 'languageConstants/1002',
   BG: 'languageConstants/1020',
@@ -82,7 +82,7 @@ const LANGUAGE_CODES: Record<string, string> = {
   UA: 'languageConstants/1036',
 }
 
-async function getAccessToken(): Promise<string> {
+export async function getAccessToken(): Promise<string> {
   const res = await fetch('https://oauth2.googleapis.com/token', {
     method: 'POST',
     headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
