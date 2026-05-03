@@ -70,7 +70,7 @@ export async function POST(req: Request) {
           geoTargetConstants: [GEO_TARGETS[geo] ?? GEO_TARGETS.CZ],
           language: LANGUAGE_CODES[geo] ?? LANGUAGE_CODES.CZ,
           keywordPlanNetwork: 'GOOGLE_SEARCH',
-          pageSize: 100,
+          pageSize: 1000,
         }),
       }
     )
@@ -85,7 +85,7 @@ export async function POST(req: Request) {
     const keywords: string[] = (data.results ?? [])
       .map((r: Record<string, unknown>) => String(r.text ?? '').trim())
       .filter(Boolean)
-      .slice(0, 100)
+      .slice(0, 1000)
 
     return NextResponse.json({ keywords })
   } catch (err) {
