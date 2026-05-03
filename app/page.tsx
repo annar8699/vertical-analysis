@@ -41,6 +41,8 @@ const GEOS = [
   { value: 'GB', label: 'United Kingdom' },
 ]
 
+type InputMode = null | 'manual' | 'upload' | 'ai'
+
 function downloadCSV(results: KeywordResult[]) {
   const headers = [
     'Keyword',
@@ -56,7 +58,7 @@ function downloadCSV(results: KeywordResult[]) {
   ])
 
   const csv = [headers, ...rows].map((row) => row.join(';')).join('\n')
-  const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' })
+  const blob = new Blob(['﻿' + csv], { type: 'text/csv;charset=utf-8;' })
   const url = URL.createObjectURL(blob)
   const a = document.createElement('a')
   a.href = url
@@ -66,6 +68,7 @@ function downloadCSV(results: KeywordResult[]) {
 }
 
 export default function Home() {
+  const [inputMode, setInputMode] = useState<InputMode>(null)
   const [keywordsText, setKeywordsText] = useState('')
   const [geo, setGeo] = useState('CZ')
   const [months, setMonths] = useState(48)
@@ -76,6 +79,13 @@ export default function Home() {
   const [isMock, setIsMock] = useState(false)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+
+  // AI generation state
+  const [aiUrl, setAiUrl] = useState('')
+  const [aiDescription, setAiDescription] = useState('')
+  const [aiSeeds, setAiSeeds] = useState('')
+  const [aiLoading, setAiLoading] = useState(false)
+  const [aiError, setAiError] = useState<string | null>(null)
 
   const handleFileUpload = useCallback(async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
@@ -101,12 +111,38 @@ export default function Home() {
         const keywords = rows.map((row) => String(row[0] ?? '').trim()).filter(Boolean)
         setKeywordsText(keywords.join('\n'))
       }
+      // After loading, switch to manual mode so user sees the editable textarea
+      setInputMode('manual')
     } catch {
       setError('Failed to load file. Try CSV or XLSX format.')
     }
 
     e.target.value = ''
   }, [])
+
+  const handleGenerateKeywords = async () => {
+    setAiLoading(true)
+    setAiError(null)
+
+    try {
+      const res = await fetch('/api/generate-keywords', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ url: aiUrl, description: aiDescription, seeds: aiSeeds }),
+      })
+
+      const data = await res.json()
+
+      if (!res.ok) throw new Error(data.error ?? 'Failed to generate keywords.')
+
+      setKeywordsText(data.keywords.join('\n'))
+      setInputMode('manual')
+    } catch (err) {
+      setAiError(err instanceof Error ? err.message : 'Unknown error.')
+    } finally {
+      setAiLoading(false)
+    }
+  }
 
   const handleAnalyze = async () => {
     const keywords = keywordsText
@@ -169,6 +205,16 @@ export default function Home() {
       })
     : results
 
+  // Shared input field / textarea focus style handlers
+  const focusOrange = (e: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    e.target.style.borderColor = 'var(--maira-orange)'
+    e.target.style.boxShadow = '0 0 0 3px rgba(255,77,48,0.08)'
+  }
+  const blurGray = (e: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    e.target.style.borderColor = '#e5e7eb'
+    e.target.style.boxShadow = 'none'
+  }
+
   return (
     <div className="min-h-screen flex flex-col" style={{ backgroundColor: '#f5f5f0' }}>
       {/* Header */}
@@ -194,51 +240,173 @@ export default function Home() {
       </header>
 
       <main className="flex-1 max-w-7xl mx-auto w-full px-6 py-8 space-y-6">
-        {/* Keywords input */}
-        <div className="bg-white rounded-2xl p-6 shadow-sm">
-          <h2
-            className="text-xs font-bold uppercase tracking-widest mb-1"
-            style={{ color: 'var(--maira-green)', letterSpacing: '0.15em' }}
-          >
-            Keywords
-          </h2>
-          <p className="text-xs mb-3" style={{ color: '#9ca3af' }}>
-            Up to 1,000 keywords, one per line
-          </p>
-          <textarea
-            value={keywordsText}
-            onChange={(e) => setKeywordsText(e.target.value)}
-            placeholder={'furniture\nsofa\ncustom armchair'}
-            className="w-full h-56 px-3 py-2 text-sm border rounded-xl resize-y focus:outline-none font-mono"
-            style={{
-              borderColor: '#e5e7eb',
-              color: '#1f2937',
-            }}
-            onFocus={(e) => (e.target.style.borderColor = 'var(--maira-orange)')}
-            onBlur={(e) => (e.target.style.borderColor = '#e5e7eb')}
-          />
-          <div className="flex items-center gap-3 mt-3">
-            <label
-              className="flex items-center gap-2 px-3 py-1.5 text-xs font-medium border rounded-lg cursor-pointer transition-colors"
-              style={{ borderColor: '#e5e7eb', color: '#6b7280' }}
-              onMouseEnter={(e) => {
-                ;(e.currentTarget as HTMLLabelElement).style.borderColor = 'var(--maira-orange)'
-                ;(e.currentTarget as HTMLLabelElement).style.color = 'var(--maira-orange)'
-              }}
-              onMouseLeave={(e) => {
-                ;(e.currentTarget as HTMLLabelElement).style.borderColor = '#e5e7eb'
-                ;(e.currentTarget as HTMLLabelElement).style.color = '#6b7280'
-              }}
-            >
-              <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
+
+        {/* ── INPUT SECTION ─────────────────────────────────────────── */}
+
+        {/* Landing: 3-block selection (shown when no mode selected and no results yet) */}
+        {inputMode === null && !results && (
+          <div>
+            <div className="mb-6">
+              <h2
+                className="text-xs font-bold uppercase tracking-widest mb-1"
+                style={{ color: 'var(--maira-green)', letterSpacing: '0.15em' }}
+              >
+                How would you like to add keywords?
+              </h2>
+              <p className="text-xs" style={{ color: '#9ca3af' }}>
+                Choose one of the three options below to get started
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              {/* Manual entry */}
+              <button
+                onClick={() => setInputMode('manual')}
+                className="group text-left bg-white rounded-2xl p-6 shadow-sm border-2 transition-all"
+                style={{ borderColor: '#e5e7eb' }}
+                onMouseEnter={(e) => (e.currentTarget.style.borderColor = 'var(--maira-orange)')}
+                onMouseLeave={(e) => (e.currentTarget.style.borderColor = '#e5e7eb')}
+              >
+                <div
+                  className="w-10 h-10 rounded-xl flex items-center justify-center mb-4"
+                  style={{ backgroundColor: '#f3f4f6' }}
+                >
+                  <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" style={{ color: 'var(--maira-green)' }}>
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                  </svg>
+                </div>
+                <h3 className="text-sm font-bold mb-1" style={{ color: '#111827' }}>Manual entry</h3>
+                <p className="text-xs leading-relaxed" style={{ color: '#9ca3af' }}>
+                  Type or paste keywords directly — one per line, up to 1,000 keywords
+                </p>
+              </button>
+
+              {/* Upload file */}
+              <label
+                className="group text-left bg-white rounded-2xl p-6 shadow-sm border-2 transition-all cursor-pointer block"
+                style={{ borderColor: '#e5e7eb' }}
+                onMouseEnter={(e) => (e.currentTarget.style.borderColor = 'var(--maira-orange)')}
+                onMouseLeave={(e) => (e.currentTarget.style.borderColor = '#e5e7eb')}
+              >
+                <div
+                  className="w-10 h-10 rounded-xl flex items-center justify-center mb-4"
+                  style={{ backgroundColor: '#f3f4f6' }}
+                >
+                  <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" style={{ color: 'var(--maira-green)' }}>
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                  </svg>
+                </div>
+                <h3 className="text-sm font-bold mb-1" style={{ color: '#111827' }}>Upload file</h3>
+                <p className="text-xs leading-relaxed" style={{ color: '#9ca3af' }}>
+                  Upload a CSV or Excel file — keywords from column A are imported automatically
+                </p>
+                <input
+                  type="file"
+                  accept=".csv,.xlsx,.xls"
+                  className="hidden"
+                  onChange={handleFileUpload}
                 />
+              </label>
+
+              {/* AI keywords */}
+              <button
+                onClick={() => setInputMode('ai')}
+                className="group text-left bg-white rounded-2xl p-6 shadow-sm border-2 transition-all"
+                style={{ borderColor: '#e5e7eb' }}
+                onMouseEnter={(e) => (e.currentTarget.style.borderColor = 'var(--maira-orange)')}
+                onMouseLeave={(e) => (e.currentTarget.style.borderColor = '#e5e7eb')}
+              >
+                <div
+                  className="w-10 h-10 rounded-xl flex items-center justify-center mb-4"
+                  style={{ backgroundColor: '#fff4f2' }}
+                >
+                  <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" style={{ color: 'var(--maira-orange)' }}>
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+                  </svg>
+                </div>
+                <h3 className="text-sm font-bold mb-1" style={{ color: '#111827' }}>
+                  AI keyword suggestions
+                  <span
+                    className="ml-2 text-xs font-semibold px-1.5 py-0.5 rounded-md"
+                    style={{ backgroundColor: '#fff4f2', color: 'var(--maira-orange)' }}
+                  >
+                    AI
+                  </span>
+                </h3>
+                <p className="text-xs leading-relaxed" style={{ color: '#9ca3af' }}>
+                  Describe your business or provide a URL and seed keywords — AI generates a list you can edit
+                </p>
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* Back button (shown when a mode is selected) */}
+        {inputMode !== null && !results && (
+          <button
+            onClick={() => { setInputMode(null); setError(null); setAiError(null) }}
+            className="flex items-center gap-1.5 text-xs font-medium transition-colors"
+            style={{ color: '#9ca3af' }}
+            onMouseEnter={(e) => ((e.currentTarget as HTMLButtonElement).style.color = 'var(--maira-green)')}
+            onMouseLeave={(e) => ((e.currentTarget as HTMLButtonElement).style.color = '#9ca3af')}
+          >
+            <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+            </svg>
+            Change input method
+          </button>
+        )}
+
+        {/* Manual entry */}
+        {inputMode === 'manual' && (
+          <div className="bg-white rounded-2xl p-6 shadow-sm">
+            <h2
+              className="text-xs font-bold uppercase tracking-widest mb-1"
+              style={{ color: 'var(--maira-green)', letterSpacing: '0.15em' }}
+            >
+              Keywords
+            </h2>
+            <p className="text-xs mb-3" style={{ color: '#9ca3af' }}>
+              One keyword per line — up to 1,000
+            </p>
+            <textarea
+              value={keywordsText}
+              onChange={(e) => setKeywordsText(e.target.value)}
+              placeholder={'furniture\nsofa\ncustom armchair'}
+              className="w-full h-56 px-3 py-2 text-sm border rounded-xl resize-y focus:outline-none font-mono transition-all"
+              style={{ borderColor: '#e5e7eb', color: '#1f2937' }}
+              onFocus={focusOrange}
+              onBlur={blurGray}
+            />
+            <p className="text-xs mt-2" style={{ color: '#d1d5db' }}>
+              {keywordsText.split('\n').filter((l) => l.trim()).length} keywords entered
+            </p>
+          </div>
+        )}
+
+        {/* Upload file */}
+        {inputMode === 'upload' && (
+          <div className="bg-white rounded-2xl p-6 shadow-sm">
+            <h2
+              className="text-xs font-bold uppercase tracking-widest mb-1"
+              style={{ color: 'var(--maira-green)', letterSpacing: '0.15em' }}
+            >
+              Upload file
+            </h2>
+            <p className="text-xs mb-5" style={{ color: '#9ca3af' }}>
+              CSV or Excel — keywords must be in column A
+            </p>
+            <label
+              className="flex flex-col items-center justify-center w-full h-36 border-2 border-dashed rounded-xl cursor-pointer transition-colors"
+              style={{ borderColor: '#e5e7eb' }}
+              onMouseEnter={(e) => (e.currentTarget.style.borderColor = 'var(--maira-orange)')}
+              onMouseLeave={(e) => (e.currentTarget.style.borderColor = '#e5e7eb')}
+            >
+              <svg className="w-8 h-8 mb-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" style={{ color: '#d1d5db' }}>
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
               </svg>
-              Upload CSV / Excel
+              <span className="text-sm font-medium" style={{ color: '#6b7280' }}>Click to choose a file</span>
+              <span className="text-xs mt-1" style={{ color: '#d1d5db' }}>.csv, .xlsx, .xls</span>
               <input
                 type="file"
                 accept=".csv,.xlsx,.xls"
@@ -246,86 +414,200 @@ export default function Home() {
                 onChange={handleFileUpload}
               />
             </label>
-            <span className="text-xs" style={{ color: '#d1d5db' }}>
-              Column A = keyword list
-            </span>
-          </div>
-        </div>
-
-        {/* Settings */}
-        <div className="flex flex-wrap gap-4">
-          <div>
-            <label
-              className="block text-xs font-bold uppercase tracking-widest mb-1.5"
-              style={{ color: 'var(--maira-green)', letterSpacing: '0.12em' }}
-            >
-              Market
-            </label>
-            <select
-              value={geo}
-              onChange={(e) => setGeo(e.target.value)}
-              className="px-3 py-2 text-sm border rounded-xl bg-white focus:outline-none"
-              style={{ borderColor: '#e5e7eb', color: '#1f2937' }}
-            >
-              {GEOS.map((g) => (
-                <option key={g.value} value={g.value}>
-                  {g.label}
-                </option>
-              ))}
-            </select>
-          </div>
-          <div>
-            <label
-              className="block text-xs font-bold uppercase tracking-widest mb-1.5"
-              style={{ color: 'var(--maira-green)', letterSpacing: '0.12em' }}
-            >
-              Period
-            </label>
-            <select
-              value={months}
-              onChange={(e) => setMonths(Number(e.target.value))}
-              className="px-3 py-2 text-sm border rounded-xl bg-white focus:outline-none"
-              style={{ borderColor: '#e5e7eb', color: '#1f2937' }}
-            >
-              <option value={48}>Maximum available (4 years)</option>
-              <option value={36}>Last 36 months</option>
-              <option value={24}>Last 24 months</option>
-              <option value={12}>Last 12 months</option>
-            </select>
-          </div>
-        </div>
-
-        {error && (
-          <div
-            className="rounded-xl px-4 py-3 text-sm"
-            style={{ backgroundColor: '#fef2f2', border: '1px solid #fecaca', color: '#b91c1c' }}
-          >
-            {error}
           </div>
         )}
 
-        <button
-          onClick={handleAnalyze}
-          disabled={loading || !keywordsText.trim()}
-          className="w-full py-3.5 text-white text-sm font-bold uppercase tracking-widest rounded-xl transition-colors disabled:opacity-40"
-          style={{
-            backgroundColor: loading || !keywordsText.trim() ? '#9ca3af' : 'var(--maira-orange)',
-            letterSpacing: '0.12em',
-          }}
-          onMouseEnter={(e) => {
-            if (!loading && keywordsText.trim())
-              (e.currentTarget as HTMLButtonElement).style.backgroundColor =
-                'var(--maira-orange-hover)'
-          }}
-          onMouseLeave={(e) => {
-            if (!loading && keywordsText.trim())
-              (e.currentTarget as HTMLButtonElement).style.backgroundColor = 'var(--maira-orange)'
-          }}
-        >
-          {loading ? 'Loading data…' : 'Analyze vertical'}
-        </button>
+        {/* AI generation form */}
+        {inputMode === 'ai' && (
+          <div className="bg-white rounded-2xl p-6 shadow-sm">
+            <div className="flex items-center gap-2 mb-1">
+              <h2
+                className="text-xs font-bold uppercase tracking-widest"
+                style={{ color: 'var(--maira-green)', letterSpacing: '0.15em' }}
+              >
+                AI keyword suggestions
+              </h2>
+              <span
+                className="text-xs font-semibold px-1.5 py-0.5 rounded-md"
+                style={{ backgroundColor: '#fff4f2', color: 'var(--maira-orange)' }}
+              >
+                AI
+              </span>
+            </div>
+            <p className="text-xs mb-5" style={{ color: '#9ca3af' }}>
+              Fill in any combination of the fields below — all are optional
+            </p>
 
-        {/* Results */}
+            <div className="space-y-4">
+              {/* URL */}
+              <div>
+                <label className="block text-xs font-semibold mb-1.5" style={{ color: '#374151' }}>
+                  Website / domain
+                </label>
+                <input
+                  type="text"
+                  value={aiUrl}
+                  onChange={(e) => setAiUrl(e.target.value)}
+                  placeholder="e.g. yourshop.com"
+                  className="w-full px-3 py-2 text-sm border rounded-xl focus:outline-none transition-all"
+                  style={{ borderColor: '#e5e7eb', color: '#1f2937' }}
+                  onFocus={focusOrange}
+                  onBlur={blurGray}
+                />
+              </div>
+
+              {/* Description */}
+              <div>
+                <label className="block text-xs font-semibold mb-1.5" style={{ color: '#374151' }}>
+                  Business / vertical description
+                </label>
+                <textarea
+                  value={aiDescription}
+                  onChange={(e) => setAiDescription(e.target.value)}
+                  placeholder="e.g. Online store selling premium baby formula and organic baby food products across Central Europe"
+                  rows={3}
+                  className="w-full px-3 py-2 text-sm border rounded-xl resize-y focus:outline-none transition-all"
+                  style={{ borderColor: '#e5e7eb', color: '#1f2937' }}
+                  onFocus={focusOrange}
+                  onBlur={blurGray}
+                />
+              </div>
+
+              {/* Seed keywords */}
+              <div>
+                <label className="block text-xs font-semibold mb-1.5" style={{ color: '#374151' }}>
+                  Seed keywords
+                </label>
+                <textarea
+                  value={aiSeeds}
+                  onChange={(e) => setAiSeeds(e.target.value)}
+                  placeholder="baby formula, kendamil, organic baby food"
+                  rows={2}
+                  className="w-full px-3 py-2 text-sm border rounded-xl resize-y focus:outline-none font-mono transition-all"
+                  style={{ borderColor: '#e5e7eb', color: '#1f2937' }}
+                  onFocus={focusOrange}
+                  onBlur={blurGray}
+                />
+                <p className="text-xs mt-1" style={{ color: '#d1d5db' }}>Comma or newline separated</p>
+              </div>
+            </div>
+
+            {aiError && (
+              <div
+                className="mt-4 rounded-xl px-4 py-3 text-sm"
+                style={{ backgroundColor: '#fef2f2', border: '1px solid #fecaca', color: '#b91c1c' }}
+              >
+                {aiError}
+              </div>
+            )}
+
+            <button
+              onClick={handleGenerateKeywords}
+              disabled={aiLoading || (!aiUrl.trim() && !aiDescription.trim() && !aiSeeds.trim())}
+              className="mt-5 w-full py-3 text-white text-sm font-bold uppercase tracking-widest rounded-xl transition-colors disabled:opacity-40"
+              style={{
+                backgroundColor:
+                  aiLoading || (!aiUrl.trim() && !aiDescription.trim() && !aiSeeds.trim())
+                    ? '#9ca3af'
+                    : 'var(--maira-orange)',
+                letterSpacing: '0.12em',
+              }}
+            >
+              {aiLoading ? (
+                <span className="flex items-center justify-center gap-2">
+                  <svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                  </svg>
+                  Generating…
+                </span>
+              ) : (
+                'Generate keywords'
+              )}
+            </button>
+          </div>
+        )}
+
+        {/* ── SETTINGS + ANALYZE ────────────────────────────────────── */}
+
+        {(inputMode === 'manual' || (results !== null)) && (
+          <>
+            {/* Settings */}
+            <div className="flex flex-wrap gap-4">
+              <div>
+                <label
+                  className="block text-xs font-bold uppercase tracking-widest mb-1.5"
+                  style={{ color: 'var(--maira-green)', letterSpacing: '0.12em' }}
+                >
+                  Market
+                </label>
+                <select
+                  value={geo}
+                  onChange={(e) => setGeo(e.target.value)}
+                  className="px-3 py-2 text-sm border rounded-xl bg-white focus:outline-none"
+                  style={{ borderColor: '#e5e7eb', color: '#1f2937' }}
+                >
+                  {GEOS.map((g) => (
+                    <option key={g.value} value={g.value}>
+                      {g.label}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div>
+                <label
+                  className="block text-xs font-bold uppercase tracking-widest mb-1.5"
+                  style={{ color: 'var(--maira-green)', letterSpacing: '0.12em' }}
+                >
+                  Period
+                </label>
+                <select
+                  value={months}
+                  onChange={(e) => setMonths(Number(e.target.value))}
+                  className="px-3 py-2 text-sm border rounded-xl bg-white focus:outline-none"
+                  style={{ borderColor: '#e5e7eb', color: '#1f2937' }}
+                >
+                  <option value={48}>Maximum available (4 years)</option>
+                  <option value={36}>Last 36 months</option>
+                  <option value={24}>Last 24 months</option>
+                  <option value={12}>Last 12 months</option>
+                </select>
+              </div>
+            </div>
+
+            {error && (
+              <div
+                className="rounded-xl px-4 py-3 text-sm"
+                style={{ backgroundColor: '#fef2f2', border: '1px solid #fecaca', color: '#b91c1c' }}
+              >
+                {error}
+              </div>
+            )}
+
+            <button
+              onClick={handleAnalyze}
+              disabled={loading || !keywordsText.trim()}
+              className="w-full py-3.5 text-white text-sm font-bold uppercase tracking-widest rounded-xl transition-colors disabled:opacity-40"
+              style={{
+                backgroundColor: loading || !keywordsText.trim() ? '#9ca3af' : 'var(--maira-orange)',
+                letterSpacing: '0.12em',
+              }}
+              onMouseEnter={(e) => {
+                if (!loading && keywordsText.trim())
+                  (e.currentTarget as HTMLButtonElement).style.backgroundColor =
+                    'var(--maira-orange-hover)'
+              }}
+              onMouseLeave={(e) => {
+                if (!loading && keywordsText.trim())
+                  (e.currentTarget as HTMLButtonElement).style.backgroundColor = 'var(--maira-orange)'
+              }}
+            >
+              {loading ? 'Loading data…' : 'Analyze vertical'}
+            </button>
+          </>
+        )}
+
+        {/* ── RESULTS ───────────────────────────────────────────────── */}
         {results && (
           <div className="space-y-6">
             {isMock && (

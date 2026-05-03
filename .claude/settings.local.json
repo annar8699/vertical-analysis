@@ -5,7 +5,16 @@
       "Bash(where node *)",
       "Bash(where npm *)",
       "PowerShell(node --version)",
-      "PowerShell(npm --version)"
+      "PowerShell(npm --version)",
+      "Skill(update-config)",
+      "Skill(update-config:*)",
+      "WebFetch(domain:ai.databy.io)",
+      "mcp__67473548-3207-4ea0-80c0-844ddfb42314__google_account_status",
+      "mcp__67473548-3207-4ea0-80c0-844ddfb42314__google_ads__get_search_hints",
+      "WebFetch(domain:mairateam.com)",
+      "Bash(git add *)",
+      "Bash(git commit *)",
+      "Bash(git push *)"
     ]
   }
 }
