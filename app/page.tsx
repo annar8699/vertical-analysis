@@ -249,6 +249,108 @@ export default function Home() {
         {/* Landing: 3-block selection (shown when no mode selected and no results yet) */}
         {inputMode === null && !results && (
           <div>
+
+            {/* Hero */}
+            <div className="rounded-2xl overflow-hidden mb-6" style={{ backgroundColor: 'var(--maira-green)' }}>
+              <div className="px-8 pt-10 pb-0 md:flex md:items-end md:gap-8">
+                {/* Text */}
+                <div className="flex-1 pb-10">
+                  <span
+                    className="inline-block text-xs font-bold uppercase tracking-widest px-3 py-1 rounded-full mb-5"
+                    style={{ backgroundColor: 'rgba(255,77,48,0.18)', color: '#FF4D30', letterSpacing: '0.15em' }}
+                  >
+                    Maira Internal Tool
+                  </span>
+                  <h2
+                    className="text-2xl md:text-3xl font-bold text-white mb-3 leading-snug"
+                    style={{ fontFamily: 'var(--font-montserrat), sans-serif' }}
+                  >
+                    Understand how any vertical<br />is searched over time
+                  </h2>
+                  <p className="text-sm leading-relaxed mb-7" style={{ color: 'rgba(255,255,255,0.6)', maxWidth: '480px' }}>
+                    Paste up to 5,000 keywords and instantly get monthly search volume data, year-over-year trends, and keyword classification — directly from Google Ads API.
+                  </p>
+                  <div className="grid grid-cols-2 gap-3">
+                    {[
+                      { icon: '📊', label: 'Volume matrix', desc: 'Years × months breakdown' },
+                      { icon: '📈', label: 'YoY comparison', desc: 'Month-by-month % change' },
+                      { icon: '🔄', label: 'Annual trend chart', desc: 'Seasonality across years' },
+                      { icon: '🏷️', label: 'Keyword classification', desc: 'Growing / Stable / Declining' },
+                    ].map((f) => (
+                      <div key={f.label} className="flex items-start gap-2.5">
+                        <span className="text-base mt-0.5">{f.icon}</span>
+                        <div>
+                          <p className="text-xs font-semibold text-white">{f.label}</p>
+                          <p className="text-xs" style={{ color: 'rgba(255,255,255,0.45)' }}>{f.desc}</p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Mini output preview */}
+                <div className="hidden md:block flex-shrink-0 w-80 pb-0">
+                  <div className="rounded-t-2xl overflow-hidden" style={{ backgroundColor: '#f5f5f0' }}>
+                    {/* Mini table */}
+                    <div className="px-4 pt-4 pb-3">
+                      <p className="text-xs font-bold uppercase tracking-widest mb-2" style={{ color: '#0A2B1D', fontSize: '9px', letterSpacing: '0.12em' }}>Total Search Volume</p>
+                      <table className="w-full" style={{ fontSize: '9px' }}>
+                        <thead>
+                          <tr style={{ backgroundColor: '#0A2B1D' }}>
+                            {['Year','Jan','Feb','Mar','Apr','May','Jun'].map(h => (
+                              <th key={h} className="px-1.5 py-1 text-right first:text-left" style={{ color: 'rgba(255,255,255,0.7)', fontWeight: 600 }}>{h}</th>
+                            ))}
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {[
+                            { year: '2023', vals: ['42k','38k','51k','89k','112k','98k'], bg: '#fff' },
+                            { year: '2024', vals: ['45k','41k','55k','95k','121k','104k'], bg: '#f9fafb' },
+                            { year: '2025', vals: ['49k','44k','60k','103k','130k','—'], bg: '#fff' },
+                          ].map(row => (
+                            <tr key={row.year} style={{ backgroundColor: row.bg }}>
+                              <td className="px-1.5 py-1 font-bold" style={{ color: '#111827' }}>{row.year}</td>
+                              {row.vals.map((v, i) => (
+                                <td key={i} className="px-1.5 py-1 text-right" style={{ color: v === '—' ? '#d1d5db' : '#374151' }}>{v}</td>
+                              ))}
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                    {/* Mini chart bars */}
+                    <div className="px-4 pb-4">
+                      <p className="text-xs font-bold uppercase tracking-widest mb-2" style={{ color: '#0A2B1D', fontSize: '9px', letterSpacing: '0.12em' }}>Annual Trend</p>
+                      <div className="flex items-end gap-1 h-14">
+                        {[
+                          { h2023: 55, h2024: 62, h2025: 70 },
+                          { h2023: 50, h2024: 57, h2025: 64 },
+                          { h2023: 65, h2024: 72, h2025: 82 },
+                          { h2023: 100, h2024: 108, h2025: 100 },
+                          { h2023: 95, h2024: 100, h2025: 100 },
+                          { h2023: 80, h2024: 88, h2025: 72 },
+                        ].map((m, i) => (
+                          <div key={i} className="flex items-end gap-px flex-1">
+                            <div className="flex-1 rounded-sm" style={{ height: `${m.h2023 * 0.56}px`, backgroundColor: '#1d6b52', opacity: 0.7 }} />
+                            <div className="flex-1 rounded-sm" style={{ height: `${m.h2024 * 0.56}px`, backgroundColor: '#0ea5e9', opacity: 0.7 }} />
+                            <div className="flex-1 rounded-sm" style={{ height: `${m.h2025 * 0.56}px`, backgroundColor: '#FF4D30', opacity: 0.9 }} />
+                          </div>
+                        ))}
+                      </div>
+                      <div className="flex gap-3 mt-2">
+                        {[['#1d6b52','2023'],['#0ea5e9','2024'],['#FF4D30','2025']].map(([c,y]) => (
+                          <div key={y} className="flex items-center gap-1">
+                            <div className="w-2 h-2 rounded-sm" style={{ backgroundColor: c }} />
+                            <span style={{ fontSize: '8px', color: '#6b7280' }}>{y}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
             <div className="mb-6">
               <h2
                 className="text-xs font-bold uppercase tracking-widest mb-1"
