@@ -14,7 +14,7 @@ import {
 import type { KeywordResult } from '@/lib/trendAnalysis'
 
 const MONTH_NAMES = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
-const YEAR_COLORS = ['#FF4D30', '#2563eb', '#16a34a', '#9333ea', '#0891b2', '#f59e0b']
+const YEAR_COLORS = ['#FF4D30', '#0A2B1D', '#6b7280', '#111827', '#a3a3a3', '#374151']
 
 function fmt(n: number) {
   return n.toLocaleString('en')
