@@ -52,12 +52,8 @@ export async function POST(req: Request) {
 
     return NextResponse.json({ keywords })
   } catch (err) {
-    const raw = err instanceof Error ? err.message : ''
-    const friendly = raw.includes('429') || raw.includes('quota')
-      ? 'API quota exceeded. Please try again in a moment.'
-      : raw.includes('API_KEY') || raw.includes('403')
-      ? 'Invalid API key. Check GOOGLE_AI_API_KEY in environment variables.'
-      : 'Failed to generate keywords. Please try again.'
-    return NextResponse.json({ error: friendly }, { status: 500 })
+    const raw = err instanceof Error ? err.message : String(err)
+    console.error('[generate-keywords]', raw)
+    return NextResponse.json({ error: raw.slice(0, 300) }, { status: 500 })
   }
 }
