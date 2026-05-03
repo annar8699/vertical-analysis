@@ -185,16 +185,11 @@ export default function Home() {
               Keyword search volume trend analysis
             </p>
           </div>
-          <span
-            className="text-xs font-bold uppercase tracking-widest px-3 py-1 rounded-full"
-            style={{
-              backgroundColor: 'var(--maira-orange)',
-              color: '#fff',
-              letterSpacing: '0.12em',
-            }}
-          >
-            Maira
-          </span>
+          <img
+            src="/maira-logo.png"
+            alt="Maira"
+            style={{ height: '32px', width: 'auto' }}
+          />
         </div>
       </header>
 
