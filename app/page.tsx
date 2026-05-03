@@ -73,7 +73,7 @@ export default function Home() {
   const [geo, setGeo] = useState('CZ')
   const [months, setMonths] = useState(48)
   const [results, setResults] = useState<KeywordResult[] | null>(null)
-  const [sortKey, setSortKey] = useState<'keyword' | 'avg' | 'min' | 'max' | 'trend' | null>(null)
+  const [sortKey, setSortKey] = useState<'keyword' | 'avg' | 'min' | 'max' | 'trend' | null>('avg')
   const [sortDir, setSortDir] = useState<'desc' | 'asc'>('desc')
   const [openGroups, setOpenGroups] = useState<Set<string>>(new Set())
   const [isMock, setIsMock] = useState(false)
@@ -191,7 +191,7 @@ export default function Home() {
   }
 
   const sortedResults = results
-    ? [...results].sort((a, b) => {
+    ? [...results].filter((r) => r.avgVolume > 0).sort((a, b) => {
         const mul = sortDir === 'desc' ? -1 : 1
         if (sortKey === 'keyword') return mul * a.keyword.localeCompare(b.keyword)
         if (sortKey === 'avg') return mul * (a.avgVolume - b.avgVolume)
