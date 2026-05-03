@@ -294,7 +294,7 @@ export function AggregatedAnalysis({ data }: { data: KeywordResult[] }) {
             {years.map((year, i) => (
               <Line
                 key={year}
-                type="monotone"
+                type="linear"
                 dataKey={String(year)}
                 stroke={YEAR_COLORS[i % YEAR_COLORS.length]}
                 strokeWidth={2.5}
