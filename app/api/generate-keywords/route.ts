@@ -21,10 +21,9 @@ Rules:
 
 // Try models in order until one works
 const CANDIDATE_MODELS = [
-  'gemini-1.5-flash',
-  'gemini-1.5-flash-latest',
-  'gemini-pro',
-  'gemini-1.0-pro',
+  'gemini-2.0-flash-lite',
+  'gemini-2.0-flash',
+  'gemini-2.0-flash-exp',
 ]
 
 export async function POST(req: Request) {
@@ -52,7 +51,7 @@ export async function POST(req: Request) {
 
     for (const model of CANDIDATE_MODELS) {
       const response = await fetch(
-        `https://generativelanguage.googleapis.com/v1/models/${model}:generateContent?key=${apiKey}`,
+        `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`,
         {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
