@@ -54,7 +54,7 @@ export async function POST(req: Request) {
     }
 
     const response = await fetch(
-      `https://googleads.googleapis.com/v21/customers/${customerId}/keywordPlanIdeas:generateKeywordIdeas`,
+      `https://googleads.googleapis.com/v21/customers/${customerId}:generateKeywordIdeas`,
       {
         method: 'POST',
         headers: {
