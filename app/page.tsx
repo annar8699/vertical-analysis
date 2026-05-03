@@ -220,7 +220,10 @@ export default function Home() {
       {/* Header */}
       <header style={{ backgroundColor: 'var(--maira-green)' }}>
         <div className="max-w-7xl mx-auto px-6 py-5 flex items-center justify-between">
-          <div>
+          <button
+            onClick={() => { setInputMode(null); setResults(null); setError(null); setAiError(null) }}
+            className="text-left"
+          >
             <h1
               className="text-white font-bold uppercase tracking-widest text-lg"
               style={{ letterSpacing: '0.15em' }}
@@ -230,7 +233,7 @@ export default function Home() {
             <p className="text-sm mt-0.5" style={{ color: 'rgba(255,255,255,0.55)' }}>
               Keyword search volume trend analysis
             </p>
-          </div>
+          </button>
           <img
             src="/maira-logo.png"
             alt="Maira"
