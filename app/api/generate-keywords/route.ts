@@ -28,7 +28,11 @@ export async function POST(req: Request) {
     }
 
     const accessToken = await getAccessToken()
-    const customerId = process.env.GOOGLE_ADS_CUSTOMER_ID!.replace(/-/g, '')
+    // generateKeywordIdeas requires the MCC (login customer) ID in the path
+    const customerId = (
+      process.env.GOOGLE_ADS_LOGIN_CUSTOMER_ID ||
+      process.env.GOOGLE_ADS_CUSTOMER_ID!
+    ).replace(/-/g, '')
 
     // Build seed keywords from seeds field + description words
     const seedList = [
