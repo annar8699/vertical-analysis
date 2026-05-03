@@ -76,9 +76,8 @@ export async function POST(req: Request) {
     )
 
     if (!response.ok) {
-      const err = await response.json().catch(() => ({}))
-      const msg = err?.error?.message ?? `HTTP ${response.status}`
-      return NextResponse.json({ error: msg }, { status: response.status })
+      const body = await response.text()
+      return NextResponse.json({ error: `${response.status}: ${body.slice(0, 500)}` }, { status: response.status })
     }
 
     const data = await response.json()
