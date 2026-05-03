@@ -464,7 +464,7 @@ export default function Home() {
                 <textarea
                   value={aiDescription}
                   onChange={(e) => setAiDescription(e.target.value)}
-                  placeholder="e.g. Online store selling premium baby formula and organic baby food products across Central Europe"
+                  placeholder="e.g. Online store selling outdoor furniture and garden accessories"
                   rows={3}
                   className="w-full px-3 py-2 text-sm border rounded-xl resize-y focus:outline-none transition-all"
                   style={{ borderColor: '#e5e7eb', color: '#1f2937' }}
@@ -481,7 +481,7 @@ export default function Home() {
                 <textarea
                   value={aiSeeds}
                   onChange={(e) => setAiSeeds(e.target.value)}
-                  placeholder="baby formula, kendamil, organic baby food"
+                  placeholder="garden furniture, outdoor sofa, patio table"
                   rows={2}
                   className="w-full px-3 py-2 text-sm border rounded-xl resize-y focus:outline-none font-mono transition-all"
                   style={{ borderColor: '#e5e7eb', color: '#1f2937' }}
