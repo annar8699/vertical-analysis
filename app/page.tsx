@@ -620,12 +620,35 @@ export default function Home() {
             {/* Keyword Breakdown — grouped accordion */}
             <div className="bg-white rounded-2xl shadow-sm overflow-hidden">
               <div className="px-6 py-4" style={{ borderBottom: '1px solid #f3f4f6' }}>
-                <h2
-                  className="text-xs font-bold uppercase tracking-widest"
-                  style={{ color: 'var(--maira-green)', letterSpacing: '0.15em' }}
-                >
-                  Keyword Breakdown
-                </h2>
+                <div className="flex items-center gap-2">
+                  <h2
+                    className="text-xs font-bold uppercase tracking-widest"
+                    style={{ color: 'var(--maira-green)', letterSpacing: '0.15em' }}
+                  >
+                    Keyword Breakdown
+                  </h2>
+                  <div className="relative group">
+                    <button
+                      className="w-4 h-4 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0"
+                      style={{ backgroundColor: '#e5e7eb', color: '#6b7280' }}
+                    >
+                      ?
+                    </button>
+                    <div
+                      className="absolute left-0 top-6 z-10 w-72 rounded-xl p-4 text-xs leading-relaxed opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity"
+                      style={{ backgroundColor: '#0A2B1D', color: 'rgba(255,255,255,0.85)', boxShadow: '0 8px 24px rgba(0,0,0,0.18)' }}
+                    >
+                      <p className="font-bold mb-2" style={{ color: '#fff' }}>How is the trend calculated?</p>
+                      <p>Each keyword is classified by comparing the <strong style={{ color: '#fff' }}>average monthly volume of the last 12 months</strong> vs. the <strong style={{ color: '#fff' }}>previous 12 months</strong>.</p>
+                      <div className="mt-3 space-y-1">
+                        <p><span style={{ color: '#4ade80' }}>● Growing</span> — YoY change &gt; +5 %</p>
+                        <p><span style={{ color: '#fb923c' }}>● Stable</span> — YoY change within ±5 %</p>
+                        <p><span style={{ color: '#f87171' }}>● Declining</span> — YoY change &lt; −5 %</p>
+                      </div>
+                      <p className="mt-3" style={{ color: 'rgba(255,255,255,0.5)' }}>Keywords with fewer than 24 months of data default to Stable.</p>
+                    </div>
+                  </div>
+                </div>
                 <p className="text-xs mt-0.5" style={{ color: '#9ca3af' }}>
                   Average monthly volume per keyword, grouped by trend
                 </p>
