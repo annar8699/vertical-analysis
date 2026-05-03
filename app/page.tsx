@@ -75,7 +75,7 @@ export default function Home() {
   const [results, setResults] = useState<KeywordResult[] | null>(null)
   const [sortKey, setSortKey] = useState<'keyword' | 'avg' | 'min' | 'max' | 'trend' | null>(null)
   const [sortDir, setSortDir] = useState<'desc' | 'asc'>('desc')
-  const [openGroups, setOpenGroups] = useState<Set<string>>(new Set(['growing', 'stable', 'declining']))
+  const [openGroups, setOpenGroups] = useState<Set<string>>(new Set())
   const [isMock, setIsMock] = useState(false)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -650,8 +650,10 @@ export default function Home() {
                           return next
                         })
                       }}
-                      className="w-full flex items-center justify-between px-6 py-3 text-left"
+                      className="w-full flex items-center justify-between px-6 py-4 text-left transition-colors"
                       style={{ backgroundColor: isOpen ? bg : '#fff' }}
+                      onMouseEnter={(e) => { if (!isOpen) e.currentTarget.style.backgroundColor = '#f9fafb' }}
+                      onMouseLeave={(e) => { if (!isOpen) e.currentTarget.style.backgroundColor = '#fff' }}
                     >
                       <div className="flex items-center gap-3">
                         <span className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ backgroundColor: dot }} />
@@ -666,11 +668,11 @@ export default function Home() {
                         </span>
                       </div>
                       <svg
-                        className="w-4 h-4 flex-shrink-0 transition-transform"
-                        style={{ color: '#9ca3af', transform: isOpen ? 'rotate(180deg)' : 'rotate(0deg)' }}
+                        className="w-5 h-5 flex-shrink-0 transition-transform"
+                        style={{ color: isOpen ? '#6b7280' : '#374151', transform: isOpen ? 'rotate(180deg)' : 'rotate(0deg)' }}
                         fill="none" viewBox="0 0 24 24" stroke="currentColor"
                       >
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M19 9l-7 7-7-7" />
                       </svg>
                     </button>
 
