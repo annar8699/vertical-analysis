@@ -16,8 +16,8 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'No keywords provided.' }, { status: 400 })
     }
 
-    if (keywords.length > 1000) {
-      return NextResponse.json({ error: 'Maximum 1,000 keywords at a time.' }, { status: 400 })
+    if (keywords.length > 5000) {
+      return NextResponse.json({ error: 'Maximum 5,000 keywords at a time.' }, { status: 400 })
     }
 
     const results = USE_MOCK

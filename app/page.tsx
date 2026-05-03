@@ -155,8 +155,8 @@ export default function Home() {
       return
     }
 
-    if (keywords.length > 1000) {
-      setError('Maximum 1,000 keywords at a time.')
+    if (keywords.length > 5000) {
+      setError('Maximum 5,000 keywords at a time.')
       return
     }
 
@@ -364,7 +364,7 @@ export default function Home() {
               Keywords
             </h2>
             <p className="text-xs mb-3" style={{ color: '#9ca3af' }}>
-              One keyword per line — up to 1,000
+              One keyword per line — up to 5,000
             </p>
             <textarea
               value={keywordsText}

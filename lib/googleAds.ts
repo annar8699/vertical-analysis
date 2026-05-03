@@ -104,14 +104,15 @@ const MONTH_NAMES = [
   'JULY','AUGUST','SEPTEMBER','OCTOBER','NOVEMBER','DECEMBER',
 ]
 
-export async function fetchKeywordVolumes(
+const BATCH_SIZE = 1000
+
+async function fetchBatch(
   keywords: string[],
   geo: string,
-  months: number
+  months: number,
+  accessToken: string,
+  customerId: string,
 ): Promise<KeywordResult[]> {
-  const accessToken = await getAccessToken()
-  const customerId = process.env.GOOGLE_ADS_CUSTOMER_ID!.replace(/-/g, '')
-
   const now = new Date()
   const start = new Date(now.getFullYear(), now.getMonth() - months, 1)
 
@@ -176,4 +177,25 @@ export async function fetchKeywordVolumes(
       trend: calculateTrend(monthlyData),
     }
   })
+}
+
+export async function fetchKeywordVolumes(
+  keywords: string[],
+  geo: string,
+  months: number
+): Promise<KeywordResult[]> {
+  const accessToken = await getAccessToken()
+  const customerId = process.env.GOOGLE_ADS_CUSTOMER_ID!.replace(/-/g, '')
+
+  // Split into batches of 1,000 and fetch in parallel
+  const batches: string[][] = []
+  for (let i = 0; i < keywords.length; i += BATCH_SIZE) {
+    batches.push(keywords.slice(i, i + BATCH_SIZE))
+  }
+
+  const results = await Promise.all(
+    batches.map((batch) => fetchBatch(batch, geo, months, accessToken, customerId))
+  )
+
+  return results.flat()
 }
